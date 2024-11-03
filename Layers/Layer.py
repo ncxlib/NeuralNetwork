@@ -1,5 +1,4 @@
 from ABC import ABC, abstractmethod
-from NeuralNetwork import Neuron
 
 class Layer(ABC):
     def __init__(self, activation_fn=None):

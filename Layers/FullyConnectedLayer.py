@@ -1,6 +1,6 @@
 import numpy as np
 import Layer
-from NeuralNetwork import Neuron
+from Neuron import Neuron
 
 class FullyConnectedLayer(Layer):
     def __init__(self, n_inputs, n_neurons, activation_fn=None):
