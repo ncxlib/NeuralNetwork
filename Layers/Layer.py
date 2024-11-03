@@ -8,3 +8,7 @@ class Layer(ABC):
     @abstractmethod
     def initialize_params(self):
         pass
+
+    @abstractmethod
+    def forward_propogation(self):
+        pass

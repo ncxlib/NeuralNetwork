@@ -10,6 +10,10 @@ class FullyConnectedLayer(Layer):
         self.initialize_params()
 
     def initialize_params(self):
-        self.neurons = []
-        for _ in range(self.n_neurons):
-            self.neurons.append(Neuron(self.bias))
+        self.neurons = [Neuron(self.n_inputs) for _ in range(self.n_neurons)]
+
+    # keep track of weighted sum of all neurons
+    def forward_propogation(self):
+        pass
+
+    # apply activation fn
