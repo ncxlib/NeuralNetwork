@@ -1,5 +1,6 @@
 from ABC import ABC, abstractmethod
 
+
 class Layer(ABC):
     def __init__(self, activation_fn=None):
         self.activation_fn = activation_fn
