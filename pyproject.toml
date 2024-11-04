@@ -15,7 +15,6 @@ nbformat = "^5.10.4"
 
 [tool.poetry.group.dev.dependencies]
 black = "^24.10.0"
-pre-commit = "^4.0.1"
 jupyterlab = "^4.3.0"
 
 [build-system]
