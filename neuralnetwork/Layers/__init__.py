@@ -1,8 +1,8 @@
 # Automatically generated __init__.py
+from neuralnetwork.layers import Layer
 from neuralnetwork.layers import fullyconnectedayer
-from neuralnetwork.layers import layer
 
+from neuralnetwork.layers.Layer import (Layer,)
 from neuralnetwork.layers.fullyconnectedayer import (FullyConnectedLayer,)
-from neuralnetwork.layers.layer import (Layer,)
 
-__all__ = ['FullyConnectedLayer', 'Layer', 'fullyconnectedayer', 'layer']
+__all__ = ['FullyConnectedLayer', 'Layer', 'fullyconnectedayer']

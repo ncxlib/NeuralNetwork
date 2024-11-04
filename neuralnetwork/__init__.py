@@ -7,10 +7,10 @@ from neuralnetwork import utils
 
 from neuralnetwork.activations import (activations, relu, sigmoid,)
 from neuralnetwork.layers import (FullyConnectedLayer, Layer,
-                                  fullyconnectedayer, layer,)
-from neuralnetwork.neuron import (Neuron, neuron,)
+                                  fullyconnectedayer,)
+from neuralnetwork.neuron import (Neuron,)
 from neuralnetwork.utils import (check, typecheck,)
 
 __all__ = ['FullyConnectedLayer', 'Layer', 'Neuron', 'activations', 'check',
-           'fullyconnectedayer', 'layer', 'layers', 'neuron', 'optimizers',
-           'relu', 'sigmoid', 'typecheck', 'utils']
+           'fullyconnectedayer', 'layers', 'neuron', 'optimizers', 'relu',
+           'sigmoid', 'typecheck', 'utils']
