@@ -1,4 +1,6 @@
 import numpy as np
+from neuralnetwork.Layers import Layer
+
 
 class Neuron:
     def __init__(self, n_inputs):
