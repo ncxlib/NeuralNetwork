@@ -8,6 +8,7 @@ __pycache__/
 
 # scrap testing
 scrap-testing/
+scrap-testing
 *.ipynb
 
 # Distribution / packaging

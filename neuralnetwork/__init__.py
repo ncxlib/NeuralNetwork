@@ -14,7 +14,6 @@ from neuralnetwork.layers import (
     FullyConnectedLayer,
     Layer,
     fully_connected_layer,
-    layer,
 )
 from neuralnetwork.neuron import (
     Neuron,
@@ -22,6 +21,10 @@ from neuralnetwork.neuron import (
 )
 from neuralnetwork.utils import (
     check,
+    generators,
+    integer_array,
+    normal_distribution_array,
+    random_array,
     typecheck,
 )
 
@@ -32,10 +35,13 @@ __all__ = [
     "activations",
     "check",
     "fully_connected_layer",
-    "layer",
+    "generators",
+    "integer_array",
     "layers",
     "neuron",
+    "normal_distribution_array",
     "optimizers",
+    "random_array",
     "relu",
     "sigmoid",
     "typecheck",
