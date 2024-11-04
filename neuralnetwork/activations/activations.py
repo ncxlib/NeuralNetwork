@@ -1,7 +1,6 @@
 import numpy as np
 from neuralnetwork.utils.check import typecheck
 
-
 def sigmoid(x: np.ndarray) -> np.ndarray:
     """
     Sigmoid activation function.
