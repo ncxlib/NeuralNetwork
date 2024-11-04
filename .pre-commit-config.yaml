@@ -3,4 +3,4 @@ repos:
     rev: 23.1.0
     hooks:
       - id: black
-        stages: [commit]  # Runs on commit stage as usual
+        stages: [pre-commit]  # Runs on commit stage as usual
