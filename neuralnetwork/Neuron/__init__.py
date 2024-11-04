@@ -1,8 +1,6 @@
 # Automatically generated __init__.py
-from neuralnetwork.Neuron import Neuron
+from neuralnetwork.neuron import neuron
 
-from neuralnetwork.Neuron.Neuron import (
-    Neuron,
-)
+from neuralnetwork.neuron.neuron import (Neuron,)
 
-__all__ = ["Neuron"]
+__all__ = ['Neuron', 'neuron']

@@ -1,9 +1,11 @@
-from neuralnetwork.Layers import Layer
-from neuralnetwork import Neuron
+from neuralnetwork.layers.layer import Layer
+from neuralnetwork.neuron.neuron import Neuron
 import numpy as np
+from typing import Callable
+
 
 class FullyConnectedLayer(Layer):
-    def __init__(self, n_inputs : str , n_neurons : int, activation_fn : str):
+    def __init__(self, n_inputs : int , n_neurons : int, activation_fn : Callable):
         super().__init__(activation_fn)
         self.n_inputs = n_inputs
         self.n_neurons = n_neurons
@@ -35,3 +37,13 @@ class FullyConnectedLayer(Layer):
             activation_outputs.append(output)
 
         return np.array(activation_outputs)
+    
+    def stochastic_gradient_descent(self):
+        pass
+
+    def back_propagation(self):
+        pass
+
+    def update_params(self):
+        pass
+

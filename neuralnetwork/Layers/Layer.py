@@ -1,14 +1,13 @@
 from abc import ABC, abstractmethod
-import numpy as np
-
+from neuralnetwork.activations import *
+from typing import Callable
 
 class Layer(ABC):
-    def __init__(self, activation_fn: str):
-        self.activation_fn = placeholder.get(activation_fn)
-        if self.activation_fn is None:
-            raise ValueError(
-                "Missing activation function. Cannot be empty. Example: activation_fn=Relu"
-            )
+    def __init__(self, activation_fn: Callable):
+        if not Callable:
+            raise ValueError("Missing activation function. Cannot be empty. Example: activation_fn=Relu")
+        
+        self.activation_fn = activation_fn
 
     @abstractmethod
     def initialize_params(self):
