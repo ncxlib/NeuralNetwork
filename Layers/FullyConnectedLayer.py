@@ -1,5 +1,5 @@
-import Layer
-from Neuron import Neuron
+from Layers.Layer import Layer
+from Neuron.Neuron import Neuron
 import numpy as np
 
 class FullyConnectedLayer(Layer):
@@ -15,7 +15,7 @@ class FullyConnectedLayer(Layer):
         '''
         self.neurons = [Neuron(self.n_inputs) for _ in range(self.n_neurons)]
 
-    def forward_propogation(self, inputs):
+    def forward_propagation(self, inputs):
         '''
         inputs:
             An array of features (should be a numpy array)
@@ -30,7 +30,7 @@ class FullyConnectedLayer(Layer):
         activation_outputs = []
         
         for neuron in self.neurons:
-            weighted_sum = neuron.calculate_weighted_sum(inputs)
+            weighted_sum = neuron.calculate_neuron_weighted_sum(inputs)
             output = self.activation_fn(weighted_sum)
             activation_outputs.append(output)
 
