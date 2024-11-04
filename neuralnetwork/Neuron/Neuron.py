@@ -11,8 +11,9 @@ class Neuron:
         """
         self.weights = np.random.randn(n_inputs)
         self.bias = np.random.randn()
+        self.weighted_sum = 0
 
-    def calculate_neurons_weighted_sum(self, inputs):
+    def calculate_neuron_weighted_sum(self, inputs):
         """
         Params:
             inputs - an array of features (should be an np array for dot prod)
@@ -22,9 +23,9 @@ class Neuron:
 
         Functionality:
             Calculates the total weighted sum of all neuron inputs + the bias term,
-            which can later be passed to an activation function.
+            which can later be passed to an activation function. This is the pre-activation Fn.
 
             Weighted Sum: z = w1 ⋅ x1 + w2 ⋅ x2 + ...+ wn ⋅ xn + b
         """
-        weighted_sum = np.dot(self.weights, inputs) + self.bias
-        return weighted_sum
+        self.weighted_sum = np.dot(self.weights, inputs) + self.bias
+        return self.weighted_sum
