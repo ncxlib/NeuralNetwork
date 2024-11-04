@@ -1,6 +1,5 @@
 import Layer
 from Neuron import Neuron
-import Enums.LayerEnums as en
 import numpy as np
 
 class FullyConnectedLayer(Layer):
