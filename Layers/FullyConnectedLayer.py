@@ -35,3 +35,16 @@ class FullyConnectedLayer(Layer):
             activation_outputs.append(output)
 
         return np.array(activation_outputs)
+    
+    
+    # calculate gradients of each neuron w/ respect to loss using chain rule 
+    # needs to take gradients from prev layer and propagate them backwards 
+    # feed gradients to the update rule
+    def back_progation(self):
+        pass
+
+
+    # update all neurons wts, bias based on gradients && learning rate
+    def update_params(self, learning_rate):
+        pass
+

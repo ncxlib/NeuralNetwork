@@ -14,3 +14,11 @@ class Layer(ABC):
     @abstractmethod
     def forward_propagation(self):
         pass
+
+    @abstractmethod
+    def back_propagation(self):
+        pass
+
+    @abstractmethod
+    def update_params(self):
+        pass
