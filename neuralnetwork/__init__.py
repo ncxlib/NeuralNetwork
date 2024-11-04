@@ -1,17 +1,24 @@
 # Automatically generated __init__.py
-from neuralnetwork import Layers
-from neuralnetwork import Neuron
 from neuralnetwork import activations
+from neuralnetwork import layers
+from neuralnetwork import neuron
 from neuralnetwork import optimizers
 from neuralnetwork import utils
 
-from neuralnetwork.Neuron import (
-    Neuron,
-)
 from neuralnetwork.activations import (
     activations,
     relu,
     sigmoid,
+)
+from neuralnetwork.layers import (
+    FullyConnectedLayer,
+    Layer,
+    fully_connected_layer,
+    layer,
+)
+from neuralnetwork.neuron import (
+    Neuron,
+    neuron,
 )
 from neuralnetwork.utils import (
     check,
@@ -21,10 +28,13 @@ from neuralnetwork.utils import (
 __all__ = [
     "FullyConnectedLayer",
     "Layer",
-    "Layers",
     "Neuron",
     "activations",
     "check",
+    "fully_connected_layer",
+    "layer",
+    "layers",
+    "neuron",
     "optimizers",
     "relu",
     "sigmoid",
