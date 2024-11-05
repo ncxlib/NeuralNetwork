@@ -48,5 +48,4 @@ def relu(x: np.ndarray) -> np.ndarray:
     """
 
     typecheck(x)
-    one = np.array(1.0, dtype=x.dtype)
-    return one / (one + np.exp(-x))
+    return np.maximum(0, x)
