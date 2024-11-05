@@ -81,19 +81,22 @@ class FullyConnectedLayer(Layer):
         dl_dz = a_dash_z * dl_dy
         return dl_dz
     
-    def calc_gradient_wrt_w(self, dl_dz):
-        dl_dw = 
+    def calc_gradient_wrt_w(self, dl_dz, inputs):
+        n_neurons = dl_dz.shape[0]
+        n_inputs = inputs.shape[0]
+        dL_dw = np.zeros((n_neurons, n_inputs))
 
-        if self.activation_fn == "sigmoid":
-            a_dash_z = 
+        for j in range(n_neurons):       
+            for i in range(n_inputs):    
+                dL_dw[j, i] = dl_dz[j] * inputs[i]  
 
-        pass
+        return dL_dw
 
     def calc_gradient_wrt_b(self, dl_dz):
         dl_db = dl_dz
         return dl_db
     
-    def back_propagation(self):
+    def back_propagation(self, dy_pred, y_pred, dz, z, dw, w, db, b):
         # pass these to the Optimizer to update all params 
         # [(dy_pred, y_pred), (dz, z), (dw, w), (db, b), optimzer]
         pass
