@@ -37,7 +37,9 @@ def add_init_files():
         else:
             print(f"__init__.py already exists in {root}")
 
-    subprocess.run(["mkinit", ".", "--recursive", "--write"], cwd=neuralnetwork_dir, check=True)
+    subprocess.run(
+        ["mkinit", ".", "--recursive", "--write"], cwd=neuralnetwork_dir, check=True
+    )
 
     neuralnetwork_init = os.path.join(neuralnetwork_dir, "__init__.py")
     clean_init_file(neuralnetwork_init)

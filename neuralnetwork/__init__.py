@@ -20,6 +20,12 @@ from neuralnetwork.neuron import (
     Neuron,
     neuron,
 )
+from neuralnetwork.optimizers import (
+    Optimizer,
+    SGD,
+    optimizer,
+    sgd,
+)
 from neuralnetwork.utils import (
     check,
     generators,
@@ -33,6 +39,8 @@ __all__ = [
     "FullyConnectedLayer",
     "Layer",
     "Neuron",
+    "Optimizer",
+    "SGD",
     "activations",
     "check",
     "fullyconnectedayer",
@@ -42,9 +50,11 @@ __all__ = [
     "layers",
     "neuron",
     "normal_distribution_array",
+    "optimizer",
     "optimizers",
     "random_array",
     "relu",
+    "sgd",
     "sigmoid",
     "typecheck",
     "utils",
