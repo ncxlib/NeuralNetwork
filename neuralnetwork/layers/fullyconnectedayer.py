@@ -38,27 +38,34 @@ class FullyConnectedLayer(Layer):
 
         return np.array(activation_outputs)
     
-    def calculate_loss(self, pred_y, y_orig):
+    def calculate_loss(self, pred_y : np.ndarray, y_orig : np.ndarray):
         '''
         Takes in the labels predicted and original labels.
 
         Calculates the loss as a mean sq error
         '''
-        pred_y = np.ndarray(pred_y)
-        y_origin = np.ndarray(y_orig)
-
-        mse = np.mean((pred_y - y_origin) ** 2)
+        mse = np.mean((pred_y - y_orig) ** 2)
         return mse
-
 
     # (feature1, feature1 (gradient of feture))
     def stochastic_gradient_descent(self, weights, bias):
-        # gradient wrt each weight
-        # gradient wrt each bias 
 
         # use chain rule to calculate gradients for weights && bias 
-        
         pass
+
+    # TODO: We assume a MSE loss. When we implement CE we can update to include CE_WRT_Y_PRED
+    def calc_gradient_wrt_y_pred(self, y_pred, y_orig):
+       '''
+        Calculates the gradient of the MSE loss wrt y_pred
+
+        Params:
+            y_pred = predicted label y
+            y_orig = original label y
+
+        Returns:
+            Gradient of the loss wrt y_pred
+       '''
+       return 2 * (y_pred - y_orig) / self.n_inputs
 
     def back_propagation(self):
         pass
