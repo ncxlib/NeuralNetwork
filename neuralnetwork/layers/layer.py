@@ -4,6 +4,7 @@ from typing import Callable, Optional
 import numpy as np
 from neuralnetwork.optimizers.optimizer import Optimizer
 
+
 class Layer(ABC):
     def __init__(self, activation_fn: Callable, optimizer: Optional[Optimizer] = None):
         if not Callable:
@@ -45,9 +46,3 @@ class Layer(ABC):
     @abstractmethod
     def calculate_loss(self, pred_y: np.ndarray, y_orig: np.ndarray):
         pass
-
-
-        
-        
-        
-        

@@ -2,6 +2,7 @@
 from neuralnetwork import activations
 from neuralnetwork import layers
 from neuralnetwork import losses
+from neuralnetwork import neuralnet
 from neuralnetwork import neuron
 from neuralnetwork import optimizers
 from neuralnetwork import utils
@@ -20,6 +21,9 @@ from neuralnetwork.layers import (
 from neuralnetwork.losses import (
     calculate_loss,
     losses,
+)
+from neuralnetwork.neuralnet import (
+    neuralnetwork,
 )
 from neuralnetwork.neuron import (
     Neuron,
@@ -55,6 +59,8 @@ __all__ = [
     "layer",
     "layers",
     "losses",
+    "neuralnet",
+    "neuralnetwork",
     "neuron",
     "normal_distribution_array",
     "optimizer",
