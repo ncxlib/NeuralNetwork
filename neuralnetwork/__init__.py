@@ -1,6 +1,7 @@
 # Automatically generated __init__.py
 from neuralnetwork import activations
 from neuralnetwork import layers
+from neuralnetwork import losses
 from neuralnetwork import neuron
 from neuralnetwork import optimizers
 from neuralnetwork import utils
@@ -15,6 +16,10 @@ from neuralnetwork.layers import (
     Layer,
     fullyconnectedayer,
     layer,
+)
+from neuralnetwork.losses import (
+    calculate_loss,
+    losses,
 )
 from neuralnetwork.neuron import (
     Neuron,
@@ -34,12 +39,14 @@ __all__ = [
     "Layer",
     "Neuron",
     "activations",
+    "calculate_loss",
     "check",
     "fullyconnectedayer",
     "generators",
     "integer_array",
     "layer",
     "layers",
+    "losses",
     "neuron",
     "normal_distribution_array",
     "optimizers",
