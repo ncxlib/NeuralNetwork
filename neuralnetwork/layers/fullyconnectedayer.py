@@ -1,13 +1,13 @@
 from neuralnetwork.layers.layer import Layer
 from neuralnetwork.neuron.neuron import Neuron
 import numpy as np
-from typing import Callable
-from neuralnetwork.optimizers.sgd import SGD
-
+from typing import Callable, Optional
+from neuralnetwork.optimizers.sgd import Optimizer
+from neuralnetwork.activations.activations import sigmoid, relu
 
 class FullyConnectedLayer(Layer):
-    def __init__(self, n_inputs: int, n_neurons: int, activation_fn: Callable, optimizer: SGD):
-        super().__init__(activation_fn)
+    def __init__(self, n_inputs: int, n_neurons: int,activation_fn: Callable, optimizer: Optional[Optimizer] = None):
+        super().__init__(activation_fn, optimizer)
         self.n_inputs = n_inputs
         self.n_neurons = n_neurons
         self.optimizer = optimizer
@@ -31,6 +31,7 @@ class FullyConnectedLayer(Layer):
             Performs forward propagation by calculating the weighted sum for each neuron
         and applying the activation function
         """
+        self.inputs = inputs
         activation_outputs = []
 
         for neuron in self.neurons:
@@ -71,12 +72,12 @@ class FullyConnectedLayer(Layer):
         # (dL/dy_pred):
         dl_dy = self.calc_gradient_wrt_y_pred(y_pred, y_orig)
 
-        if self.activation_fn == "sigmoid":
+        if self.activation_fn == sigmoid:
             # Sigmoid derivative: a'(z) = a(z) * (1 - a(z))
             a_dash_z = a_dash_z * (1 - a_dash_z)
-
-        elif self.activation_fn == "relu":
-            # TODO: implement for Relu
+        elif self.activation_fn.__name__ == relu:
+            # ReLU derivative: a'(z) = 1 if z > 0 else 0
+            a_dash_z = np.where(weighted_sum > 0, 1, 0) 
             pass
         else:
             raise ValueError("No activation fn found")
@@ -99,23 +100,24 @@ class FullyConnectedLayer(Layer):
         dl_db = dl_dz
         return dl_db
 
-    def back_propagation(self,y_orig, y_pred):
+    def back_propagation(self, y_orig, y_pred):
         # gradient wrt y_pred
         dl_dy = self.calc_gradient_wrt_y_pred(y_pred, y_orig)
+        grads_and_vars = []  
 
-        # gradient wrt z
-        dl_dz = self.calc_gradient_wrt_z(self.z, y_pred, y_orig)
+        for i, neuron in enumerate(self.neurons):
+            dl_dz = self.calc_gradient_wrt_z(neuron.weighted_sum, y_pred[i], y_orig[i])
 
-        # gradient wrt w
-        dl_dw = self.dl_dw = self.calc_gradient_wrt_w(dl_dz, self.inputs)
+            # weights, bias
+            dl_dw = dl_dz * self.inputs  
+            dl_db = dl_dz                
+            
+            grads_and_vars.append((dl_dw, neuron.weights))  
+            grads_and_vars.append((dl_db, neuron.bias))     
 
-        # gradient wrt b
-        dl_db = self.calc_gradient_wrt_b(dl_dz)
-
-        # pass to optimizer
-        grads_and_vars = [(dl_dw, self.weights),  (dl_db, self.biases)]
+        # pass to optimizer 
         self.optimizer.apply_gradients(grads_and_vars)
-
+        
 
     # compile(optimizer, type_of_loss=MSE)
     # fit(features (x), labels(y), epochs, validation_set(x (validation set), y (validation set)))
