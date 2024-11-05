@@ -1,9 +1,11 @@
 from neuralnetwork.layers.layer import Layer
 from neuralnetwork.neuron.neuron import Neuron
 import numpy as np
-from typing import Callable, Optional
-from neuralnetwork.optimizers.sgd import Optimizer
-from neuralnetwork.activations.activations import sigmoid, relu
+from typing import Optional
+from neuralnetwork.optimizers.optimizer import Optimizer
+from neuralnetwork.optimizers.sgd import SGD
+from neuralnetwork.activations.activation import Activation
+from neuralnetwork.activations.relu import ReLU
 
 
 class FullyConnectedLayer(Layer):
@@ -11,13 +13,12 @@ class FullyConnectedLayer(Layer):
         self,
         n_inputs: int,
         n_neurons: int,
-        activation_fn: Callable,
-        optimizer: Optional[Optimizer] = None,
+        activation: Optional[Activation] = ReLU,
+        optimizer: Optional[Optimizer] = SGD,
     ):
-        super().__init__(activation_fn, optimizer)
+        super().__init__(activation, optimizer)
         self.n_inputs = n_inputs
         self.n_neurons = n_neurons
-        self.optimizer = optimizer
         self.initialize_params()
 
     def initialize_params(self):
@@ -43,7 +44,7 @@ class FullyConnectedLayer(Layer):
 
         for neuron in self.neurons:
             weighted_sum = neuron.calculate_neuron_weighted_sum(inputs)
-            output = self.activation_fn(weighted_sum)
+            output = self.activation.apply(weighted_sum)
             activation_outputs.append(output)
 
         return np.array(activation_outputs)
@@ -73,23 +74,14 @@ class FullyConnectedLayer(Layer):
         return 2 * (y_pred - y_orig) / self.n_inputs
 
     def calc_gradient_wrt_z(self, weighted_sum, y_pred, y_orig):
-        # a`(z):
-        a_dash_z = self.activation_fn(weighted_sum)
 
-        # (dL/dy_pred):
+        # (∂L/∂y_pred):
         dl_dy = self.calc_gradient_wrt_y_pred(y_pred, y_orig)
 
-        if self.activation_fn == sigmoid:
-            # Sigmoid derivative: a'(z) = a(z) * (1 - a(z))
-            a_dash_z = a_dash_z * (1 - a_dash_z)
-        elif self.activation_fn == relu:
-            # ReLU derivative: a'(z) = 1 if z > 0 else 0
-            a_dash_z = np.where(weighted_sum > 0, 1, 0)
-            pass
-        else:
-            raise ValueError("No activation fn found")
+        # (∂L/∂a)
+        dl_da = self.activation.derivative(weighted_sum)
 
-        dl_dz = a_dash_z * dl_dy
+        dl_dz = dl_da * dl_dy
         return dl_dz
 
     def calc_gradient_wrt_w(self, dl_dz, inputs):
@@ -123,6 +115,7 @@ class FullyConnectedLayer(Layer):
             grads_and_vars.append((dl_db, neuron.bias))
 
         # pass to optimizer
+
         self.optimizer.apply_gradients(grads_and_vars)
 
     # compile(optimizer, type_of_loss=MSE)

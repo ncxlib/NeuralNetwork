@@ -8,7 +8,10 @@ from neuralnetwork import optimizers
 from neuralnetwork import utils
 
 from neuralnetwork.activations import (
-    activations,
+    Activation,
+    ReLU,
+    Sigmoid,
+    activation,
     relu,
     sigmoid,
 )
@@ -23,6 +26,7 @@ from neuralnetwork.losses import (
     losses,
 )
 from neuralnetwork.neuralnet import (
+    NeuralNetwork,
     neuralnetwork,
 )
 from neuralnetwork.neuron import (
@@ -45,11 +49,16 @@ from neuralnetwork.utils import (
 )
 
 __all__ = [
+    "Activation",
     "FullyConnectedLayer",
     "Layer",
+    "NeuralNetwork",
     "Neuron",
     "Optimizer",
+    "ReLU",
     "SGD",
+    "Sigmoid",
+    "activation",
     "activations",
     "calculate_loss",
     "check",

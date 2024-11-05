@@ -3,16 +3,23 @@ from neuralnetwork.activations import *
 from typing import Callable, Optional
 import numpy as np
 from neuralnetwork.optimizers.optimizer import Optimizer
+from neuralnetwork.optimizers.sgd import SGD
+from neuralnetwork.activations.relu import ReLU
 
 
 class Layer(ABC):
-    def __init__(self, activation_fn: Callable, optimizer: Optional[Optimizer] = None):
+    def __init__(
+        self,
+        activation: Optional[Activation] = ReLU,
+        optimizer: Optional[Optimizer] = SGD,
+    ):
         if not Callable:
             raise ValueError(
                 "Missing activation function. Cannot be empty. Example: activation_fn=Relu"
             )
 
-        self.activation_fn = activation_fn
+        self.activation = activation()
+        print("self.activation is: ", self.activation)
         self.optimizer = optimizer
 
     @abstractmethod
