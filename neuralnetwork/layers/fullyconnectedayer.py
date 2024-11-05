@@ -2,13 +2,15 @@ from neuralnetwork.layers.layer import Layer
 from neuralnetwork.neuron.neuron import Neuron
 import numpy as np
 from typing import Callable
+from neuralnetwork.optimizers.sgd import SGD
 
 
 class FullyConnectedLayer(Layer):
-    def __init__(self, n_inputs: int, n_neurons: int, activation_fn: Callable):
+    def __init__(self, n_inputs: int, n_neurons: int, activation_fn: Callable, optimizer: SGD):
         super().__init__(activation_fn)
         self.n_inputs = n_inputs
         self.n_neurons = n_neurons
+        self.optimizer = optimizer
         self.initialize_params()
 
     def initialize_params(self):
@@ -97,13 +99,23 @@ class FullyConnectedLayer(Layer):
         dl_db = dl_dz
         return dl_db
 
-    def back_propagation(self, dy_pred, y_pred, dz, z, dw, w, db, b):
-        # pass these to the Optimizer to update all params
-        # [(dy_pred, y_pred), (dz, z), (dw, w), (db, b), optimzer]
-        pass
+    def back_propagation(self,y_orig, y_pred):
+        # gradient wrt y_pred
+        dl_dy = self.calc_gradient_wrt_y_pred(y_pred, y_orig)
 
-    def update_params(self):
-        pass
+        # gradient wrt z
+        dl_dz = self.calc_gradient_wrt_z(self.z, y_pred, y_orig)
+
+        # gradient wrt w
+        dl_dw = self.dl_dw = self.calc_gradient_wrt_w(dl_dz, self.inputs)
+
+        # gradient wrt b
+        dl_db = self.calc_gradient_wrt_b(dl_dz)
+
+        # pass to optimizer
+        grads_and_vars = [(dl_dw, self.weights),  (dl_db, self.biases)]
+        self.optimizer.apply_gradients(grads_and_vars)
+
 
     # compile(optimizer, type_of_loss=MSE)
     # fit(features (x), labels(y), epochs, validation_set(x (validation set), y (validation set)))
