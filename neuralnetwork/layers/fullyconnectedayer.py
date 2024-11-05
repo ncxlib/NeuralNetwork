@@ -37,6 +37,14 @@ class FullyConnectedLayer(Layer):
             activation_outputs.append(output)
 
         return np.array(activation_outputs)
+    
+    def calculate_loss(self, pred_y, y_orig):
+        '''
+        Takes in the labels predicted and original values
+
+        Calculates the loss as a mean sq error
+        '''
+        return (np.ndarray(pred_y) - np.ndarray(y_orig)) ** 2 / self.n_inputs
 
     def stochastic_gradient_descent(self):
         pass
@@ -46,3 +54,11 @@ class FullyConnectedLayer(Layer):
 
     def update_params(self):
         pass
+    
+    # compile(optimizer, type_of_loss=MSE)
+    # fit(features (x), labels(y), epochs, validation_set(x (validation set), y (validation set))) 
+        # back propagation happens here
+    # evaluate(test_x, test_y) --> outputs loss && accuracy
+
+    # neural net class (model) takes in array of layers
+    # each base layer takes in (n_neurons, activation_fn)
