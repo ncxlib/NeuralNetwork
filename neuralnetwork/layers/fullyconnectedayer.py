@@ -5,8 +5,15 @@ from typing import Callable, Optional
 from neuralnetwork.optimizers.sgd import Optimizer
 from neuralnetwork.activations.activations import sigmoid, relu
 
+
 class FullyConnectedLayer(Layer):
-    def __init__(self, n_inputs: int, n_neurons: int,activation_fn: Callable, optimizer: Optional[Optimizer] = None):
+    def __init__(
+        self,
+        n_inputs: int,
+        n_neurons: int,
+        activation_fn: Callable,
+        optimizer: Optional[Optimizer] = None,
+    ):
         super().__init__(activation_fn, optimizer)
         self.n_inputs = n_inputs
         self.n_neurons = n_neurons
@@ -77,7 +84,7 @@ class FullyConnectedLayer(Layer):
             a_dash_z = a_dash_z * (1 - a_dash_z)
         elif self.activation_fn == relu:
             # ReLU derivative: a'(z) = 1 if z > 0 else 0
-            a_dash_z = np.where(weighted_sum > 0, 1, 0) 
+            a_dash_z = np.where(weighted_sum > 0, 1, 0)
             pass
         else:
             raise ValueError("No activation fn found")
@@ -103,21 +110,20 @@ class FullyConnectedLayer(Layer):
     def back_propagation(self, y_orig, y_pred):
         # gradient wrt y_pred
         dl_dy = self.calc_gradient_wrt_y_pred(y_pred, y_orig)
-        grads_and_vars = []  
+        grads_and_vars = []
 
         for i, neuron in enumerate(self.neurons):
             dl_dz = self.calc_gradient_wrt_z(neuron.weighted_sum, y_pred[i], y_orig[i])
 
             # weights, bias
-            dl_dw = dl_dz * self.inputs  
-            dl_db = dl_dz                
-            
-            grads_and_vars.append((dl_dw, neuron.weights))  
-            grads_and_vars.append((dl_db, neuron.bias))     
+            dl_dw = dl_dz * self.inputs
+            dl_db = dl_dz
 
-        # pass to optimizer 
+            grads_and_vars.append((dl_dw, neuron.weights))
+            grads_and_vars.append((dl_db, neuron.bias))
+
+        # pass to optimizer
         self.optimizer.apply_gradients(grads_and_vars)
-        
 
     # compile(optimizer, type_of_loss=MSE)
     # fit(features (x), labels(y), epochs, validation_set(x (validation set), y (validation set)))
