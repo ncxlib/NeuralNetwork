@@ -3,7 +3,6 @@ from neuralnetwork.neuron.neuron import Neuron
 import numpy as np
 from typing import Callable
 
-
 class FullyConnectedLayer(Layer):
     def __init__(self, n_inputs: int, n_neurons: int, activation_fn: Callable):
         super().__init__(activation_fn)
@@ -47,16 +46,11 @@ class FullyConnectedLayer(Layer):
         mse = np.mean((pred_y - y_orig) ** 2)
         return mse
 
-    # (feature1, feature1 (gradient of feture))
-    def stochastic_gradient_descent(self, weights, bias):
-
-        # use chain rule to calculate gradients for weights && bias 
-        pass
-
     # TODO: We assume a MSE loss. When we implement CE we can update to include CE_WRT_Y_PRED
     def calc_gradient_wrt_y_pred(self, y_pred, y_orig):
        '''
-        Calculates the gradient of the MSE loss wrt y_pred
+        Calculates the gradient of the MSE loss wrt y_pred.
+        This is the output from the final layer.
 
         Params:
             y_pred = predicted label y
@@ -66,8 +60,42 @@ class FullyConnectedLayer(Layer):
             Gradient of the loss wrt y_pred
        '''
        return 2 * (y_pred - y_orig) / self.n_inputs
+    
+    def calc_gradient_wrt_z(self, weighted_sum, y_pred, y_orig):
+        # a`(z):
+        a_dash_z = self.activation_fn(weighted_sum)
 
+        # (dL/dy_pred):
+        dl_dy = self.calc_gradient_wrt_y_pred(y_pred, y_orig)
+
+        if self.activation_fn == "sigmoid":
+            # Sigmoid derivative: a'(z) = a(z) * (1 - a(z))
+            a_dash_z = a_dash_z * (1 - a_dash_z)
+        
+        elif self.activation_fn == "relu":
+            # TODO: implement for Relu
+            pass
+        else:
+            raise ValueError("No activation fn found")
+
+        dl_dz = a_dash_z * dl_dy
+        return dl_dz
+    
+    def calc_gradient_wrt_w(self, dl_dz):
+        dl_dw = 
+
+        if self.activation_fn == "sigmoid":
+            a_dash_z = 
+
+        pass
+
+    def calc_gradient_wrt_b(self, dl_dz):
+        dl_db = dl_dz
+        return dl_db
+    
     def back_propagation(self):
+        # pass these to the Optimizer to update all params 
+        # [(dy_pred, y_pred), (dz, z), (dw, w), (db, b), optimzer]
         pass
 
     def update_params(self):
