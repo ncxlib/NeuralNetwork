@@ -117,11 +117,3 @@ class FullyConnectedLayer(Layer):
         # pass to optimizer
 
         self.optimizer.apply_gradients(grads_and_vars)
-
-    # compile(optimizer, type_of_loss=MSE)
-    # fit(features (x), labels(y), epochs, validation_set(x (validation set), y (validation set)))
-    # back propagation happens here
-    # evaluate(test_x, test_y) --> outputs loss && accuracy
-
-    # neural net class (model) takes in array of layers
-    # each base layer takes in (n_neurons, activation_fn)
