@@ -75,7 +75,7 @@ class FullyConnectedLayer(Layer):
         if self.activation_fn == sigmoid:
             # Sigmoid derivative: a'(z) = a(z) * (1 - a(z))
             a_dash_z = a_dash_z * (1 - a_dash_z)
-        elif self.activation_fn.__name__ == relu:
+        elif self.activation_fn == relu:
             # ReLU derivative: a'(z) = 1 if z > 0 else 0
             a_dash_z = np.where(weighted_sum > 0, 1, 0) 
             pass

@@ -2,6 +2,9 @@ import numpy as np
 
 
 def typecheck(x):
+    if np.isscalar(x):
+        x = np.array([x], dtype=np.float64)
+
     if not isinstance(x, np.ndarray):
         raise TypeError(f"Input must be a numpy array, got {type(x)} instead.")
 
@@ -12,3 +15,4 @@ def typecheck(x):
         raise TypeError(
             f"Input array must be of a numeric type, got {x.dtype} instead."
         )
+    return x
