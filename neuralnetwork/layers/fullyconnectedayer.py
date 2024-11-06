@@ -86,7 +86,8 @@ class FullyConnectedLayer(Layer):
 
     def calc_gradient_wrt_w(self, dl_dz, inputs):
         # just the outer project of 2 vectors
-        return dl_dz * inputs
+        dL_dw = np.outer(dl_dz, inputs)
+        return dL_dw
 
     def calc_gradient_wrt_b(self, dl_dz):
         dl_db = dl_dz

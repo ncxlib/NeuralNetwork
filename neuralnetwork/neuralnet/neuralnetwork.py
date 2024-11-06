@@ -1,6 +1,7 @@
 from neuralnetwork.layers.fullyconnectedayer import FullyConnectedLayer
 from neuralnetwork.losses.losses import MSE
 from typing import Callable
+import numpy as np
 
 class NeuralNetwork:
     def __init__(self):
@@ -28,7 +29,7 @@ class NeuralNetwork:
 
                 y_pred = self.forward_propagation(input_vector)
 
-                loss = loss_fn(y_pred, y_true)
+                loss = loss_fn(np.array([y_pred]), np.array([y_true]))
                 total_loss += loss
 
                 self.back_propagation(y_true, y_pred)
