@@ -1,4 +1,5 @@
 from neuralnetwork.layers.fullyconnectedayer import FullyConnectedLayer
+from neuralnetwork.losses.losses import MSE
 
 class NeuralNetwork:
     def __init__(self):
@@ -7,24 +8,37 @@ class NeuralNetwork:
     def add_layer(self, layer):
         self.layers.append(layer)
 
-    def forward_propagation(self, inputs):
+    def build_layer(self,n_inputs, n_neurons, activation, optimizer, layer_type : FullyConnectedLayer):
+        layer = FullyConnectedLayer(n_inputs, n_neurons, activation, optimizer, layer_type)
+        self.add_layer(layer)
+
+    def forward_propagation(self, input_vector):
         for layer in self.layers:
-            inputs = layer.forward_propagation(inputs)
-        return inputs
+            input_vector = layer.forward_propagation(input_vector)
+        return input_vector
 
     def backward_propagate(self, y_orig, y_pred):
         for layer in reversed(self.layers):
             layer.back_propagation(y_orig, y_pred)
     
 
-    def train(self, inputs, y_orig, epochs):
+    def train(self, inputs, targets, epochs):
         for epoch in range(epochs):
-            y_pred = self.forward_propagation(inputs)
+            total_loss = 0
+            for i in range(len(inputs)):
 
-            loss = self.layers[-1].calculate_loss(y_pred, y_orig)
-            print(f"Epoch {epoch + 1}, Loss: {loss}")
+                input_vector = inputs[i]
+                y_true = targets[i]
 
-            self.backward_propagate(y_orig, y_pred)
+                y_pred = self.forward_propagation(input_vector)
+
+                loss = MSE(y_pred, y_true)
+                total_loss += loss
+
+                self.back_propagation(y_true, y_pred)
+
+            average_loss = total_loss / len(inputs)
+            print(f"Epoch {epoch + 1}, Average Loss: {average_loss}")
 
     def predict(self, inputs):
         return self.forward_propagation(inputs)
