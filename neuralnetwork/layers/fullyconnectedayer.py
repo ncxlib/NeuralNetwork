@@ -85,27 +85,25 @@ class FullyConnectedLayer(Layer):
         return dl_dz
 
     def calc_gradient_wrt_w(self, dl_dz, inputs):
-        return dl_dz * inputs
+        # take outer dot prod to calc gradients to get the right shape from prev layer
+        return np.outer(dl_dz, inputs)
 
     def calc_gradient_wrt_b(self, dl_dz):
         dl_db = dl_dz
         return dl_db
 
     def back_propagation(self, y_orig, y_pred):
-        # gradient wrt y_pred
         grads_and_vars = []
 
         for i, neuron in enumerate(self.neurons):
-            dl_dz = self.calc_gradient_wrt_z(neuron.weighted_sum, y_pred, y_orig)
+            dl_dz = self.calc_gradient_wrt_z(neuron.weighted_sum, y_pred[i], y_orig[i])
 
             # weights, bias
             dl_dw = self.calc_gradient_wrt_w(dl_dz, self.inputs)  
             dl_db = self.calc_gradient_wrt_b(dl_dz)
 
-
-            # retur size of [([], []), ()] --> seems wrong. right?
-            grads_and_vars.append((dl_dw, neuron.weights)) # vector of n-d weights per neuron
-            grads_and_vars.append((dl_db, neuron.bias)) # tuple of scalar bias values
+            grads_and_vars.append((dl_dw, neuron.weights)) 
+            grads_and_vars.append((dl_db, neuron.bias)) 
 
         # pass to optimizer
         updated_vars = self.optimizer.apply_gradients(grads_and_vars)
@@ -113,6 +111,3 @@ class FullyConnectedLayer(Layer):
         for i, neuron in enumerate(self.neurons):
             neuron.weights = updated_vars[2 * i]
             neuron.bias = updated_vars[2 * i + 1]
-
-
-        # We never call the updated weights... why
