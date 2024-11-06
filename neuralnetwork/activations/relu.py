@@ -28,8 +28,7 @@ class ReLU(Activation):
         """
 
         typecheck(x)
-        one = np.array(1.0, dtype=x.dtype)
-        return one / (one + np.exp(-x))
+        return np.max(x, 0)
 
     def derivative(self, x: np.ndarray) -> np.ndarray:
         """

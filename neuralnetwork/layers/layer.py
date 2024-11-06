@@ -19,7 +19,6 @@ class Layer(ABC):
             )
 
         self.activation = activation()
-        print("self.activation is: ", self.activation)
         self.optimizer = optimizer
 
     @abstractmethod

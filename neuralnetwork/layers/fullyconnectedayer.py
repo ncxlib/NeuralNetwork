@@ -85,15 +85,8 @@ class FullyConnectedLayer(Layer):
         return dl_dz
 
     def calc_gradient_wrt_w(self, dl_dz, inputs):
-        n_neurons = dl_dz.shape[0]
-        n_inputs = inputs.shape[0]
-        dL_dw = np.zeros((n_neurons, n_inputs))
-
-        for j in range(n_neurons):
-            for i in range(n_inputs):
-                dL_dw[j, i] = dl_dz[j] * inputs[i]
-
-        return dL_dw
+        # just the outer project of 2 vectors
+        return dl_dz * inputs
 
     def calc_gradient_wrt_b(self, dl_dz):
         dl_db = dl_dz
@@ -101,19 +94,22 @@ class FullyConnectedLayer(Layer):
 
     def back_propagation(self, y_orig, y_pred):
         # gradient wrt y_pred
-        dl_dy = self.calc_gradient_wrt_y_pred(y_pred, y_orig)
         grads_and_vars = []
 
         for i, neuron in enumerate(self.neurons):
             dl_dz = self.calc_gradient_wrt_z(neuron.weighted_sum, y_pred[i], y_orig[i])
 
             # weights, bias
-            dl_dw = dl_dz * self.inputs
-            dl_db = dl_dz
+            dl_dw = self.calc_gradient_wrt_w(dl_dz, self.inputs)
+            dl_db = self.calc_gradient_wrt_b(dl_dz)
 
             grads_and_vars.append((dl_dw, neuron.weights))
             grads_and_vars.append((dl_db, neuron.bias))
 
         # pass to optimizer
 
-        self.optimizer.apply_gradients(grads_and_vars)
+        grads_and_vars = self.optimizer.apply_gradients(grads_and_vars)
+
+        for i, neuron in enumerate(self.neurons):
+            neuron.weights = grads_and_vars[2 * i]
+            neuron.bias = grads_and_vars[2 * i + 1]
