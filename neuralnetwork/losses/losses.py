@@ -1,11 +1,38 @@
 import numpy as np
 
 
-def calculate_loss(pred_y: np.ndarray, y_orig: np.ndarray):
+def MSE(pred_y: np.ndarray, y_orig: np.ndarray):
     """
-    Takes in the labels predicted and original labels.
+    Calculates the Mean Squared Error (MSE) loss.
 
-    Calculates the loss as a mean sq error
+    Parameters:
+    pred_y : np.ndarray
+        Predicted values.
+    y_orig : np.ndarray
+        Original labels.
+
+    Returns:
+    float
+        MSE loss.
     """
     mse = np.mean((pred_y - y_orig) ** 2)
     return mse
+
+
+def cross_entropy(pred_y: np.ndarray, y_orig: np.ndarray):
+    """
+    Calculates the Cross-Entropy (CE) loss for binary classification.
+
+    Parameters:
+    pred_y : np.ndarray
+        Predicted probabilities (output from sigmoid).
+    y_orig : np.ndarray
+        Original labels (0 or 1).
+
+    Returns:
+    float
+        Cross-Entropy loss.
+    """
+    pred_y = np.clip(pred_y, 1e-12, 1 - 1e-12)
+    ce = -np.mean(y_orig * np.log(pred_y) + (1 - y_orig) * np.log(1 - pred_y))
+    return ce

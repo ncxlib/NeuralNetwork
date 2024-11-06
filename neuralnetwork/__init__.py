@@ -22,7 +22,8 @@ from neuralnetwork.layers import (
     layer,
 )
 from neuralnetwork.losses import (
-    calculate_loss,
+    MSE,
+    cross_entropy,
     losses,
 )
 from neuralnetwork.neuralnet import (
@@ -52,6 +53,7 @@ __all__ = [
     "Activation",
     "FullyConnectedLayer",
     "Layer",
+    "MSE",
     "NeuralNetwork",
     "Neuron",
     "Optimizer",
@@ -60,8 +62,8 @@ __all__ = [
     "Sigmoid",
     "activation",
     "activations",
-    "calculate_loss",
     "check",
+    "cross_entropy",
     "fullyconnectedayer",
     "generators",
     "integer_array",

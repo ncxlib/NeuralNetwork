@@ -2,7 +2,8 @@
 from neuralnetwork.losses import losses
 
 from neuralnetwork.losses.losses import (
-    calculate_loss,
+    MSE,
+    cross_entropy,
 )
 
-__all__ = ["calculate_loss", "losses"]
+__all__ = ["MSE", "cross_entropy", "losses"]
