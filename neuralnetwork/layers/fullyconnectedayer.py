@@ -94,13 +94,20 @@ class FullyConnectedLayer(Layer):
 
     def back_propagation(self, y_orig, y_pred):
         grads_and_vars = []
+        
+        y_orig = np.atleast_1d(y_orig)
+        y_pred = np.atleast_1d(y_pred)
 
         for i, neuron in enumerate(self.neurons):
-            dl_dz = self.calc_gradient_wrt_z(neuron.weighted_sum, y_pred[i], y_orig[i])
+            target = y_orig[i] if len(y_orig) > 1 else y_orig[0]
+            prediction = y_pred[i] if len(y_pred) > 1 else y_pred[0]
+            
+            dl_dz = self.calc_gradient_wrt_z(neuron.weighted_sum, prediction, target)
 
             # weights, bias
             dl_dw = self.calc_gradient_wrt_w(dl_dz, self.inputs)  
             dl_db = self.calc_gradient_wrt_b(dl_dz)
+            dl_db = np.atleast_1d(dl_db)
 
             grads_and_vars.append((dl_dw, neuron.weights)) 
             grads_and_vars.append((dl_db, neuron.bias)) 

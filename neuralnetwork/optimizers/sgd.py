@@ -39,6 +39,10 @@ class SGD(Optimizer):
 
         updated_vars = []
         for i, (grad, var) in enumerate(grads_and_vars):
+            print(f"Gradient shape: {grad.shape}, Variable shape: {var.shape}")
+            grad = np.atleast_1d(grad)
+            var = np.atleast_1d(var)
+            
             if not isinstance(grad, np.ndarray):
                 grad = np.array(
                     [grad]
