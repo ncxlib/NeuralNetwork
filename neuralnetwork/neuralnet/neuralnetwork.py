@@ -24,6 +24,7 @@ class NeuralNetwork:
         for epoch in range(epochs):
             total_loss = 0
             for i in range(len(inputs)):
+                # iterate over every individual sample && its target label:
                 input_vector = inputs[i]
                 y_true = targets[i]
 

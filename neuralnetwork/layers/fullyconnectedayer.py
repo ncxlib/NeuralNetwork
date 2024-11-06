@@ -26,6 +26,7 @@ class FullyConnectedLayer(Layer):
         Initializes Neurons with random weights and biases following the Normal Distr.
         """
         self.neurons = [Neuron(self.n_inputs) for _ in range(self.n_neurons)]
+        
 
     def forward_propagation(self, inputs):
         """
@@ -74,7 +75,6 @@ class FullyConnectedLayer(Layer):
         return 2 * (y_pred - y_orig) / self.n_inputs
 
     def calc_gradient_wrt_z(self, weighted_sum, y_pred, y_orig):
-
         # (∂L/∂y_pred):
         dl_dy = self.calc_gradient_wrt_y_pred(y_pred, y_orig)
 
@@ -85,7 +85,6 @@ class FullyConnectedLayer(Layer):
         return dl_dz
 
     def calc_gradient_wrt_w(self, dl_dz, inputs):
-        # just the outer project of 2 vectors
         return dl_dz * inputs
 
     def calc_gradient_wrt_b(self, dl_dz):
@@ -103,12 +102,17 @@ class FullyConnectedLayer(Layer):
             dl_dw = self.calc_gradient_wrt_w(dl_dz, self.inputs)  
             dl_db = self.calc_gradient_wrt_b(dl_dz)
 
-            grads_and_vars.append((dl_dw, neuron.weights))
-            grads_and_vars.append((dl_db, neuron.bias))
+
+            # retur size of [([], []), ()] --> seems wrong. right?
+            grads_and_vars.append((dl_dw, neuron.weights)) # vector of n-d weights per neuron
+            grads_and_vars.append((dl_db, neuron.bias)) # tuple of scalar bias values
 
         # pass to optimizer
-        self.optimizer.apply_gradients(grads_and_vars)
+        updated_vars = self.optimizer.apply_gradients(grads_and_vars)
 
         for i, neuron in enumerate(self.neurons):
-            neuron.weights = grads_and_vars[2 * i]
-            neuron.bias = grads_and_vars[2 * i + 1]
+            neuron.weights = updated_vars[2 * i]
+            neuron.bias = updated_vars[2 * i + 1]
+
+
+        # We never call the updated weights... why
