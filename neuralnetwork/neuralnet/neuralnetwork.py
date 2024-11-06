@@ -14,9 +14,9 @@ class NeuralNetwork:
             input_vector = layer.forward_propagation(input_vector)
         return input_vector
 
-    def backward_propagation(self, y_orig, y_pred):
+    def back_propagation(self, y_true, y_pred):
         for layer in reversed(self.layers):
-            layer.back_propagation(y_orig, y_pred)
+            layer.back_propagation(y_true, y_pred)
     
 
     def train(self, inputs, targets, epochs, loss_fn : Callable):
@@ -32,6 +32,7 @@ class NeuralNetwork:
                 total_loss += loss
 
                 self.back_propagation(y_true, y_pred)
+
 
             average_loss = total_loss / len(inputs)
             print(f"Epoch {epoch + 1}, Average Loss: {average_loss}")

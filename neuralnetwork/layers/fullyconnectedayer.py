@@ -97,7 +97,7 @@ class FullyConnectedLayer(Layer):
         grads_and_vars = []
 
         for i, neuron in enumerate(self.neurons):
-            dl_dz = self.calc_gradient_wrt_z(neuron.weighted_sum, y_pred[i], y_orig[i])
+            dl_dz = self.calc_gradient_wrt_z(neuron.weighted_sum, y_pred, y_orig)
 
             # weights, bias
             dl_dw = self.calc_gradient_wrt_w(dl_dz, self.inputs)
@@ -107,7 +107,6 @@ class FullyConnectedLayer(Layer):
             grads_and_vars.append((dl_db, neuron.bias))
 
         # pass to optimizer
-
         grads_and_vars = self.optimizer.apply_gradients(grads_and_vars)
 
         for i, neuron in enumerate(self.neurons):
