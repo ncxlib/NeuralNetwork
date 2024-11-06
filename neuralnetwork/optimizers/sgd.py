@@ -40,9 +40,7 @@ class SGD(Optimizer):
         updated_vars = []
         for i, (grad, var) in enumerate(grads_and_vars):
             if not isinstance(grad, np.ndarray):
-                grad = np.array(
-                    [grad]
-                )  # Convert scalar gradients to arrays for consistency
+                grad = np.array([grad])
 
             if self.momentum:
                 self.velocity[i] = (
@@ -52,7 +50,6 @@ class SGD(Optimizer):
             else:
                 updated_var = var - self.learning_rate * grad
 
-            # Append the updated variable, ensuring it's an array
             updated_vars.append(np.array(updated_var))
 
         return updated_vars

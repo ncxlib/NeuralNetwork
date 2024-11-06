@@ -1,52 +1,38 @@
 import subprocess
 import os
 import nbformat as nbf
-
-
-def clean_init_file(file_path):
-    """
-    Removes lines that start with 'from neuralnetwork.' from the given file.
-    """
-    with open(file_path, "r") as f:
-        lines = f.readlines()
-
-    cleaned_lines = [
-        line for line in lines if not line.startswith("from neuralnetwork.Layers")
-    ]
-
-    with open(file_path, "w") as f:
-        f.writelines(cleaned_lines)
-
+import re
 
 def add_init_files():
     """
-    Recursively adds __init__.py files to all folders and subfolders in neuralnetwork
+    Recursively adds __init__.py files to all folders and subfolders in specified directories
     if they don't already exist, then cleans up imports in neuralnetwork/__init__.py.
     """
     remove_all_init_files()
 
     base_dir = os.path.abspath(os.path.dirname(__file__))
-    neuralnetwork_dir = os.path.join(base_dir, "neuralnetwork")
+    directories = ["neuralnetwork", "datasets", "dataloaders"]
 
-    for root, dirs, files in os.walk(neuralnetwork_dir):
-        init_file = os.path.join(root, "__init__.py")
-        if not os.path.exists(init_file):
-            with open(init_file, "w") as f:
-                f.write("# Automatically generated __init__.py\n")
-            print(f"Added __init__.py to {root}")
-        else:
-            print(f"__init__.py already exists in {root}")
+    for directory in directories:
+        target_dir = os.path.join(base_dir, directory)
 
-    subprocess.run(
-        ["mkinit", ".", "--recursive", "--write"], cwd=neuralnetwork_dir, check=True
-    )
+        for root, dirs, files in os.walk(target_dir):
+            init_file = os.path.join(root, "__init__.py")
+            if not os.path.exists(init_file):
+                with open(init_file, "w") as f:
+                    f.write("# Automatically generated __init__.py\n")
+                print(f"Added __init__.py to {root}")
+            else:
+                print(f"__init__.py already exists in {root}")
 
-    neuralnetwork_init = os.path.join(neuralnetwork_dir, "__init__.py")
-    clean_init_file(neuralnetwork_init)
-    print(f"Cleaned up {neuralnetwork_init}")
+        # Generate __init__.py files with mkinit and clean imports
+        subprocess.run(
+            ["mkinit", ".", "--recursive", "--write", "--nomods", "--relative", "--black"],
+            cwd=target_dir,
+            check=True,
+        )
 
-    subprocess.run(["black", neuralnetwork_dir], check=True)
-    print(f"Formatted files in {neuralnetwork_dir} with Black")
+        update_init_files(directory)
 
 
 def fmt():
@@ -72,7 +58,7 @@ def remove_all_init_files():
 
 def notebook():
     """
-    Creates a notebook for quick testing in the scrap-testing folder
+    Creates a notebook for quick testing in the scrap-testing folder.
 
     Parameters:
     - notebook_dir (str): Directory where the notebook will be created.
@@ -95,3 +81,83 @@ def notebook():
         nbf.write(nb, f)
 
     print(f"Created notebook at {notebook_path}")
+
+def get_import_dependencies(module_name, dir):
+    module_path = os.path.join(dir, f"{module_name}.py")
+    dependencies = []
+    
+    if os.path.exists(module_path):
+        with open(module_path, 'r') as f:
+            for line in f:
+                match = "from" in line and "import" in line
+                if match:
+                    dependency = line.split(" ")[3]
+                    many_dependancies = dependency.split(",")
+                    if len(many_dependancies) == 1:
+                        if many_dependancies[0].strip().lower() == "": 
+                            continue
+                        dependencies.append(many_dependancies[0].strip().lower())
+                    else:
+                        for each in many_dependancies:
+                            if each.strip() == "": continue
+                            dependencies.append(each.strip().lower())
+                    
+    return dependencies
+
+def get_import_order(file_path, dir):
+    with open(file_path, 'r') as f:
+        lines = f.readlines()
+
+    imports = {}
+    current_import = []
+    inside_import_block = False
+
+    # print(f"Processing file: {file_path}")
+    for line in lines:
+        if line.strip().startswith("from .") and "import (" in line:
+            current_import.append(line.strip())
+            inside_import_block = True
+            module_name = line.split()[1][1:]
+            # print(f"Found module: {module_name} in line {lines.index(line) + 1}.")
+            continue
+
+        if inside_import_block:
+            current_import.append(line.strip())
+            if line.strip() == ")":
+                full_import_line = "\n".join(current_import)
+                module_path = os.path.join(dir, module_name)
+                depth = len(module_path.split(os.sep))
+                imports[module_name] = (depth, full_import_line)
+                current_import = []
+                inside_import_block = False
+
+    ordered_imports = []
+    visited = set()
+
+    def dfs(module):
+        if module in visited:
+            return
+        visited.add(module)
+        dependencies = get_import_dependencies(module, dir)
+        
+        for dep in dependencies:
+            if dep in imports:
+                dfs(dep)
+        
+        ordered_imports.append(imports[module][1])
+
+    for module in imports:
+        if module not in visited:
+            dfs(module)
+
+    return ordered_imports
+
+def update_init_files(dir):
+    for root, dirs, files in os.walk(dir):
+        if '__init__.py' in files:
+            init_file = os.path.join(root, '__init__.py')
+            ordered_lines = get_import_order(init_file, dir)
+
+            with open(init_file, 'w') as f:
+                # f.write("# Automatically ordered imports\n")
+                f.write('\n'.join(ordered_lines) + '\n')
