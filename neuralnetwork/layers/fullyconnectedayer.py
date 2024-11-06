@@ -86,8 +86,7 @@ class FullyConnectedLayer(Layer):
 
     def calc_gradient_wrt_w(self, dl_dz, inputs):
         # just the outer project of 2 vectors
-        dL_dw = np.outer(dl_dz, inputs)
-        return dL_dw
+        return np.outer(dl_dz, inputs)
 
     def calc_gradient_wrt_b(self, dl_dz):
         dl_db = dl_dz
@@ -100,16 +99,17 @@ class FullyConnectedLayer(Layer):
         for i, neuron in enumerate(self.neurons):
             dl_dz = self.calc_gradient_wrt_z(neuron.weighted_sum, y_pred, y_orig)
 
+
             # weights, bias
-            dl_dw = self.calc_gradient_wrt_w(dl_dz, self.inputs)
+            dl_dw = self.calc_gradient_wrt_w(dl_dz, self.inputs)  
             dl_db = self.calc_gradient_wrt_b(dl_dz)
 
             grads_and_vars.append((dl_dw, neuron.weights))
             grads_and_vars.append((dl_db, neuron.bias))
 
         # pass to optimizer
-        grads_and_vars = self.optimizer.apply_gradients(grads_and_vars)
+        self.optimizer.apply_gradients(grads_and_vars)
 
-        for i, neuron in enumerate(self.neurons):
-            neuron.weights = grads_and_vars[2 * i]
-            neuron.bias = grads_and_vars[2 * i + 1]
+        # for i, neuron in enumerate(self.neurons):
+        #     neuron.weights = grads_and_vars[2 * i]
+        #     neuron.bias = grads_and_vars[2 * i + 1]
