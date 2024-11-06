@@ -3,10 +3,9 @@ import numpy as np
 
 
 class DataLoader(ABC):
-    def __init__(self, batch_size=32, shuffle=True, num_workers=0):
+    def __init__(self, batch_size=32, shuffle=True):
         self.batch_size = batch_size
         self.shuffle = shuffle
-        self.num_workers = num_workers
         self.indices = None
 
     @abstractmethod

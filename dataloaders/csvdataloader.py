@@ -4,10 +4,10 @@ from datasets import CSVDataset
 
 class CSVDataLoader(DataLoader):
     def __init__(
-        self, file_path, batch_size=32, shuffle=True, transform=None, num_workers=0
+        self, file_path, batch_size=32, shuffle=True
     ):
-        super().__init__(batch_size, shuffle, num_workers)
-        self.dataset = CSVDataset(file_path, transform)
+        super().__init__(batch_size, shuffle)
+        self.dataset = CSVDataset(file_path)
         self.set_indices(len(self.dataset))
 
     def __iter__(self):
