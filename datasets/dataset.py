@@ -1,14 +1,12 @@
-from abc import ABC, abstractmethod
-
+from abc import ABC
+import pandas as pd
 
 class Dataset(ABC):
-    def __init__(self):
-        pass
+    def __init__(self, data: pd.DataFrame):
+        self.data = data
 
-    @abstractmethod
     def __getitem__(self, index):
-        return NotImplementedError
+        return self.data.iloc[index]
 
-    @abstractmethod
     def __len__(self):
-        return NotImplementedError
+        return len(self.data)

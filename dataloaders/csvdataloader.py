@@ -1,20 +1,14 @@
 from dataloaders import DataLoader
 from datasets import CSVDataset
-
+from typing import Optional
+from preprocessing import Preprocessor
 
 class CSVDataLoader(DataLoader):
     def __init__(
-        self, file_path, batch_size=32, shuffle=True
+        self, file_path, shuffle=False, preprocessors: Optional[list[Preprocessor]] = []
     ):
-        super().__init__(batch_size, shuffle)
+        super().__init__(shuffle, preprocessors)
         self.dataset = CSVDataset(file_path)
         self.set_indices(len(self.dataset))
 
-    def __iter__(self):
-        for start in range(0, len(self.indices), self.batch_size):
-            batch_indices = self.indices[start : start + self.batch_size]
-            batch_data = [self.dataset[idx] for idx in batch_indices]
-            yield batch_data
-
-    def __len__(self):
-        return (len(self.indices) + self.batch_size - 1) // self.batch_size
+        self.preprocess()
