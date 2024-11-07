@@ -1,85 +1,30 @@
-# Automatically generated __init__.py
-from neuralnetwork import activations
-from neuralnetwork import layers
-from neuralnetwork import losses
-from neuralnetwork import neuralnet
-from neuralnetwork import neuron
-from neuralnetwork import optimizers
-from neuralnetwork import utils
-
-from neuralnetwork.activations import (
-    Activation,
-    ReLU,
-    Sigmoid,
-    activation,
-    relu,
-    sigmoid,
+from .activations import (
+Activation,
+ReLU,
+Sigmoid,
 )
-from neuralnetwork.layers import (
-    FullyConnectedLayer,
-    Layer,
-    fullyconnectedayer,
-    layer,
+from .layers import (
+FullyConnectedLayer,
+Layer,
 )
-from neuralnetwork.losses import (
-    MSE,
-    cross_entropy,
-    losses,
+from .losses import (
+MSE,
+cross_entropy,
 )
-from neuralnetwork.neuralnet import (
-    NeuralNetwork,
-    neuralnetwork,
+from .neuralnet import (
+NeuralNetwork,
 )
-from neuralnetwork.neuron import (
-    Neuron,
-    neuron,
+from .neuron import (
+Neuron,
 )
-from neuralnetwork.optimizers import (
-    Optimizer,
-    SGD,
-    optimizer,
-    sgd,
+from .optimizers import (
+Optimizer,
+SGD,
 )
-from neuralnetwork.utils import (
-    check,
-    generators,
-    integer_array,
-    normal_distribution_array,
-    random_array,
-    typecheck,
+from .utils import (
+generate_random_csv,
+integer_array,
+normal_distribution_array,
+random_array,
+typecheck,
 )
-
-__all__ = [
-    "Activation",
-    "FullyConnectedLayer",
-    "Layer",
-    "MSE",
-    "NeuralNetwork",
-    "Neuron",
-    "Optimizer",
-    "ReLU",
-    "SGD",
-    "Sigmoid",
-    "activation",
-    "activations",
-    "check",
-    "cross_entropy",
-    "fullyconnectedayer",
-    "generators",
-    "integer_array",
-    "layer",
-    "layers",
-    "losses",
-    "neuralnet",
-    "neuralnetwork",
-    "neuron",
-    "normal_distribution_array",
-    "optimizer",
-    "optimizers",
-    "random_array",
-    "relu",
-    "sgd",
-    "sigmoid",
-    "typecheck",
-    "utils",
-]
