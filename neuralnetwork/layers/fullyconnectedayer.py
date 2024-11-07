@@ -7,7 +7,6 @@ from neuralnetwork.optimizers.sgd import SGD
 from neuralnetwork.activations.activation import Activation
 from neuralnetwork.activations.relu import ReLU
 
-
 class FullyConnectedLayer(Layer):
     def __init__(
         self,
@@ -28,7 +27,7 @@ class FullyConnectedLayer(Layer):
         self.neurons = [Neuron(self.n_inputs) for _ in range(self.n_neurons)]
         
 
-    def forward_propagation(self, inputs):
+    def forward_propagation(self, inputs: np.ndarray) -> tuple[np.ndarray, int]:
         """
         inputs:
             An array of features (should be a numpy array)
@@ -48,7 +47,8 @@ class FullyConnectedLayer(Layer):
             output = self.activation.apply(weighted_sum)
             activation_outputs.append(output)
 
-        return np.array(activation_outputs)
+        y_pred = 1 if output >= 0.5 else 0
+        return np.array(activation_outputs), y_pred
 
     def calculate_loss(self, pred_y: np.ndarray, y_orig: np.ndarray):
         """
@@ -86,35 +86,34 @@ class FullyConnectedLayer(Layer):
 
     def calc_gradient_wrt_w(self, dl_dz, inputs):
         # take outer dot prod to calc gradients to get the right shape from prev layer
-        return np.outer(dl_dz, inputs)
+        return dl_dz * inputs
 
     def calc_gradient_wrt_b(self, dl_dz):
         dl_db = dl_dz
         return dl_db
 
     def back_propagation(self, y_orig, y_pred):
+        # gradient wrt y_pred
         grads_and_vars = []
-        
-        y_orig = np.atleast_1d(y_orig)
-        y_pred = np.atleast_1d(y_pred)
 
         for i, neuron in enumerate(self.neurons):
-            target = y_orig[i] if len(y_orig) > 1 else y_orig[0]
-            prediction = y_pred[i] if len(y_pred) > 1 else y_pred[0]
-            
-            dl_dz = self.calc_gradient_wrt_z(neuron.weighted_sum, prediction, target)
+            dl_dz = self.calc_gradient_wrt_z(neuron.calculate_neuron_weighted_sum(self.inputs), y_pred, y_orig)
 
             # weights, bias
-            dl_dw = self.calc_gradient_wrt_w(dl_dz, self.inputs)  
+            dl_dw = self.calc_gradient_wrt_w(dl_dz, self.inputs)
             dl_db = self.calc_gradient_wrt_b(dl_dz)
-            dl_db = np.atleast_1d(dl_db)
+
 
             grads_and_vars.append((dl_dw, neuron.weights)) 
             grads_and_vars.append((dl_db, neuron.bias)) 
 
-        # pass to optimizer
-        updated_vars = self.optimizer.apply_gradients(grads_and_vars)
 
-        for i, neuron in enumerate(self.neurons):
-            neuron.weights = updated_vars[2 * i]
-            neuron.bias = updated_vars[2 * i + 1]
+        # pass to optimizer
+        grads_and_vars = self.optimizer.apply_gradients(grads_and_vars)
+
+        idx = 0
+        for neuron in self.neurons:
+            neuron.weights = grads_and_vars[idx]
+            idx += 1
+            neuron.bias = grads_and_vars[idx]
+            idx += 1

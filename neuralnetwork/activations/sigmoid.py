@@ -46,7 +46,5 @@ class Sigmoid(Activation):
             Numpy array with the sigmoid derivative applied element-wise.
         """
 
-        if not self.activated:
-            self.activated = self.apply(x)
-
+        self.activated = self.apply(x)
         return self.activated * (1 - self.activated)
