@@ -4,3 +4,6 @@ Dataset,
 from .csvdataset import (
 CSVDataset,
 )
+from .imagedataset import (
+ImageDataset,
+)

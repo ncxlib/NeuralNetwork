@@ -17,5 +17,3 @@ class DataLoader(ABC):
         self.indices = np.arange(dataset_length)
         if self.shuffle:
             np.random.shuffle(self.indices)
-
-
