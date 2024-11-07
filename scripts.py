@@ -11,7 +11,7 @@ def add_init_files():
     remove_all_init_files()
 
     base_dir = os.path.abspath(os.path.dirname(__file__))
-    directories = ["neuralnetwork", "datasets", "dataloaders", "preprocessing"]
+    directories = ["neuralnetwork", "datasets", "dataloaders", "preprocessing", "generators"]
 
     for directory in directories:
         target_dir = os.path.join(base_dir, directory)
