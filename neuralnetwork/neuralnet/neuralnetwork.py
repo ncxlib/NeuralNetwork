@@ -24,7 +24,6 @@ class NeuralNetwork:
 
     def train(self, inputs, targets, epochs, loss_fn : Callable):
         for epoch in tqdm(range(epochs), leave=True):
-            total_loss = 0
             preds = [0] * len(inputs)
 
             for i in range(len(inputs)):

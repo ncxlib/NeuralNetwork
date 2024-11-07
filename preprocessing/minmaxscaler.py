@@ -7,7 +7,7 @@ class MinMaxScaler(Scaler):
         super().__init__()
         
     
-    def apply(self, dataset: Dataset):
+    def apply(self, dataset: Dataset) -> Dataset:
         numeric_data = dataset.data.select_dtypes(include='number')
         self.min_values = numeric_data.min()
         self.max_values = numeric_data.max()
@@ -16,5 +16,6 @@ class MinMaxScaler(Scaler):
         numeric_data = dataset.data.select_dtypes(include='number')
         
         data[numeric_data.columns] = (numeric_data - self.min_values) / (self.max_values - self.min_values)
-        return data
+        dataset.data = data 
+        return dataset
         
