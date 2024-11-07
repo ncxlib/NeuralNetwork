@@ -22,10 +22,13 @@ class ImageGrayscaler(Preprocessor):
             rgb_pixels = row['pixels']
             grayscale_image = self.img_to_grayscale(rgb_pixels)
             img_array = np.array(grayscale_image)
-            imgs.append({"image_name": row['image_name'], "grayscale_pixels": img_array})
+            imgs.append({"image_name": row['image_name'], "pixels": img_array})
 
 
-        return pd.DataFrame(imgs)
+        dataframe = pd.DataFrame(imgs)
+        dataframe['image_name'] = dataframe['image_name'].astype("string")
+
+        return dataframe
     
 
     def apply(self, dataset: Dataset) -> Dataset:

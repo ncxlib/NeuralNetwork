@@ -1,8 +1,11 @@
 from .preprocessor import (
 Preprocessor,
 )
-from .img_grayscaler import (
+from .imagegrayscaler import (
 ImageGrayscaler,
+)
+from .imagerescaler import (
+ImageRescaler,
 )
 from .scaler import (
 Scaler,
