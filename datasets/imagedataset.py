@@ -11,11 +11,10 @@ class ImageDataset(Dataset):
     def load_images(self):
         data = []
         for image_name in os.listdir(self.directory_path):
-            if image_name.endswith(".png"):
-                path = os.path.join(self.directory_path, image_name)
-                image = Image.open(path).convert('RGB')
-                pixels = self.get_all_pixels(image)
-                data.append({"image_name": image_name, "pixels": pixels})
+            path = os.path.join(self.directory_path, image_name)
+            image = Image.open(path).convert('RGB')
+            pixels = self.get_all_pixels(image)
+            data.append({"image_name": image_name, "pixels": pixels})
 
             
         self.data = pd.DataFrame(data)
