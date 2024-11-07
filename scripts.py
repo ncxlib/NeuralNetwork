@@ -34,6 +34,8 @@ def add_init_files():
 
         update_init_files(directory)
 
+    move_layer_import_to_top()
+
 
 def fmt():
     """
@@ -161,3 +163,23 @@ def update_init_files(dir):
             with open(init_file, 'w') as f:
                 # f.write("# Automatically ordered imports\n")
                 f.write('\n'.join(ordered_lines) + '\n')
+
+def move_layer_import_to_top():
+    """
+    Moves the .layer import to the top of neuralnetwork/layers/__init__.py file,
+    respecting multi-line Black-formatted import structure.
+    """
+    layers_init_path = os.path.join("neuralnetwork", "layers", "__init__.py")
+
+    if os.path.exists(layers_init_path):
+        with open(layers_init_path, 'r') as f:
+            data = f.read()
+
+        layer_import = "from .layer import ( Layer, )\n"
+        data = data.replace("from .layer import (\nLayer,\n)", "")
+
+        with open(layers_init_path, 'w') as f:
+            f.writelines(layer_import + data)
+
+        print("Moved .layer imports to the top in neuralnetwork/layers/__init__.py")
+

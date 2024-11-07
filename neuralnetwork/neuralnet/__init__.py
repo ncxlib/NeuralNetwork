@@ -1,3 +1,3 @@
-from .neuralnetwork import (
+from .nn import (
 NeuralNetwork,
 )

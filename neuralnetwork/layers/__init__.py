@@ -1,6 +1,11 @@
-from .fullyconnectedayer import (
+from .layer import ( Layer, )
+from .fullyconnectedlayer import (
 FullyConnectedLayer,
 )
-from .layer import (
-Layer,
+from .inputlayer import (
+InputLayer,
+)
+
+from .outputlayer import (
+OutputLayer,
 )

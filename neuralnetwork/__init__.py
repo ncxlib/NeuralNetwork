@@ -5,7 +5,9 @@ Sigmoid,
 )
 from .layers import (
 FullyConnectedLayer,
+InputLayer,
 Layer,
+OutputLayer,
 )
 from .losses import (
 MSE,

@@ -1,32 +1,28 @@
 from neuralnetwork.layers.layer import Layer
-from neuralnetwork.neuron.neuron import Neuron
 import numpy as np
 from typing import Optional
 from neuralnetwork.optimizers.optimizer import Optimizer
 from neuralnetwork.optimizers.sgd import SGD
 from neuralnetwork.activations.activation import Activation
 from neuralnetwork.activations.relu import ReLU
+from neuralnetwork.neuron import Neuron 
 
 class FullyConnectedLayer(Layer):
     def __init__(
         self,
-        n_inputs: int,
-        n_neurons: int,
+        n_inputs: Optional[int] = None,
+        n_neurons: Optional[int] = None,
         activation: Optional[Activation] = ReLU,
         optimizer: Optional[Optimizer] = SGD,
     ):
-        super().__init__(activation, optimizer)
-        self.n_inputs = n_inputs
-        self.n_neurons = n_neurons
-        self.initialize_params()
-
-    def initialize_params(self):
+        super().__init__(n_inputs, n_neurons, activation, optimizer)
+        
+    def initialize_params(self, inputs):
         """
         Initializes Neurons with random weights and biases following the Normal Distr.
         """
         self.neurons = [Neuron(self.n_inputs) for _ in range(self.n_neurons)]
-        
-
+    
     def forward_propagation(self, inputs: np.ndarray) -> tuple[np.ndarray, int]:
         """
         inputs:
@@ -47,53 +43,7 @@ class FullyConnectedLayer(Layer):
             output = self.activation.apply(weighted_sum)
             activation_outputs.append(output)
 
-        y_pred = 1 if output >= 0.5 else 0
-        return np.array(activation_outputs), y_pred
-
-    def calculate_loss(self, pred_y: np.ndarray, y_orig: np.ndarray):
-        """
-        Takes in the labels predicted and original labels.
-
-        Calculates the loss as a mean sq error
-        """
-        mse = np.mean((pred_y - y_orig) ** 2)
-        return mse
-
-    # TODO: We assume a MSE loss. When we implement CE we can update to include CE_WRT_Y_PRED
-    def calc_gradient_wrt_y_pred(self, y_pred, y_orig):
-        """
-        Calculates the gradient of the MSE loss wrt y_pred.
-        This is the output from the final layer.
-
-        Params:
-            y_pred = predicted label y
-            y_orig = original label y
-
-        Returns:
-            Gradient of the loss wrt y_pred
-        """
-        return 2 * (y_pred - y_orig) / self.n_inputs
-        # y_pred = np.clip(y_pred, 1e-12, 1 - 1e-12)
-    
-        # return (y_pred - y_orig) / (y_pred * (1 - y_pred))
-
-    def calc_gradient_wrt_z(self, weighted_sum, y_pred, y_orig):
-        # (∂L/∂y_pred):
-        dl_dy = self.calc_gradient_wrt_y_pred(y_pred, y_orig)
-
-        # (∂L/∂a)
-        dl_da = self.activation.derivative(weighted_sum)
-
-        dl_dz = dl_da * dl_dy
-        return dl_dz
-
-    def calc_gradient_wrt_w(self, dl_dz, inputs):
-        # take outer dot prod to calc gradients to get the right shape from prev layer
-        return dl_dz * inputs
-
-    def calc_gradient_wrt_b(self, dl_dz):
-        dl_db = dl_dz
-        return dl_db
+        return np.array(activation_outputs)
 
     def back_propagation(self, y_orig, y_pred):
         # gradient wrt y_pred
