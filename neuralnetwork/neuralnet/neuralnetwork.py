@@ -2,7 +2,7 @@ from neuralnetwork.layers.fullyconnectedayer import FullyConnectedLayer
 from neuralnetwork.losses.losses import MSE
 from typing import Callable
 import numpy as np
-from tqdm import tqdm
+from tqdm.auto import tqdm
 
 
 class NeuralNetwork:
@@ -23,8 +23,9 @@ class NeuralNetwork:
     
 
     def train(self, inputs, targets, epochs, loss_fn : Callable):
-        for epoch in tqdm(range(epochs), position=0, leave=True):
+        for epoch in tqdm(range(epochs), leave=True):
             total_loss = 0
+            preds = [0] * len(inputs)
 
             for i in range(len(inputs)):
                 # iterate over every individual sample && its target label:
@@ -32,15 +33,14 @@ class NeuralNetwork:
                 y_true = targets[i]
 
                 y_pred = self.forward_propagation(input_vector)
-                loss = loss_fn(np.array([y_pred]), np.array([y_true]))
-                total_loss += loss
-
                 self.back_propagation(y_true, y_pred)
 
+                preds[i] = y_pred
+                print(preds[i], y_true)
 
-            average_loss = total_loss / len(inputs)
-            
-            if epoch % 10 == 100:
+            average_loss = loss_fn(preds, targets)
+
+            if epoch % 10 == 0:
                 print(f"Epoch {epoch + 1}, Average Loss: {average_loss}")
 
 

@@ -15,6 +15,7 @@ def MSE(pred_y: np.ndarray, y_orig: np.ndarray):
     float
         MSE loss.
     """
+
     mse = np.mean((pred_y - y_orig) ** 2)
     return mse
 
@@ -33,6 +34,7 @@ def cross_entropy(pred_y: np.ndarray, y_orig: np.ndarray):
     float
         Cross-Entropy loss.
     """
+
     pred_y = np.clip(pred_y, 1e-12, 1 - 1e-12)
     ce = -np.mean(y_orig * np.log(pred_y) + (1 - y_orig) * np.log(1 - pred_y))
     return ce

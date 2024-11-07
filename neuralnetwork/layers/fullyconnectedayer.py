@@ -73,6 +73,9 @@ class FullyConnectedLayer(Layer):
             Gradient of the loss wrt y_pred
         """
         return 2 * (y_pred - y_orig) / self.n_inputs
+        # y_pred = np.clip(y_pred, 1e-12, 1 - 1e-12)
+    
+        # return (y_pred - y_orig) / (y_pred * (1 - y_pred))
 
     def calc_gradient_wrt_z(self, weighted_sum, y_pred, y_orig):
         # (∂L/∂y_pred):
@@ -106,7 +109,6 @@ class FullyConnectedLayer(Layer):
 
             grads_and_vars.append((dl_dw, neuron.weights)) 
             grads_and_vars.append((dl_db, neuron.bias)) 
-
 
         # pass to optimizer
         grads_and_vars = self.optimizer.apply_gradients(grads_and_vars)

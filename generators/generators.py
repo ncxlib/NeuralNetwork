@@ -1,4 +1,7 @@
+import pandas as pd
 import numpy as np
+import random
+import string
 
 
 def random_array(shape, low=0.0, high=1.0):
@@ -45,10 +48,44 @@ def integer_array(shape, low=0, high=10):
     """
     return np.random.randint(low, high, size=shape)
 
-import pandas as pd
-import numpy as np
-import random
-import string
+def generate_training_data(num_samples=1000, num_features=2, label_ratio=0.5, random_seed=None):
+    """
+    Generates structured data for neural network training with labels 1/0.
+    The data will have a pattern where positive and negative samples are separated into clusters.
+    
+    Parameters:
+    - num_samples (int): Total number of samples to generate.
+    - num_features (int): Number of features for each sample.
+    - label_ratio (float): Ratio of label 1 in the dataset. Should be between 0 and 1.
+    - random_seed (int): Optional seed for reproducibility.
+    
+    Returns:
+    - X (np.ndarray): Generated feature matrix of shape (num_samples, num_features).
+    - y (np.ndarray): Generated labels of shape (num_samples,).
+    """
+    if random_seed is not None:
+        np.random.seed(random_seed)
+    
+    num_label_1 = int(num_samples * label_ratio)
+    num_label_0 = num_samples - num_label_1
+    
+    X_label_1 = np.random.randn(num_label_1, num_features) + 2  # Shift this cluster to distinguish
+    y_label_1 = np.ones(num_label_1)
+    
+    # Cluster for label 0
+    X_label_0 = np.random.randn(num_label_0, num_features) - 2  # Shift in the opposite direction
+    y_label_0 = np.zeros(num_label_0)
+    
+    # Combine the clusters
+    X = np.vstack([X_label_1, X_label_0])
+    y = np.hstack([y_label_1, y_label_0])
+    
+    # Shuffle the dataset to mix labels
+    shuffle_indices = np.random.permutation(num_samples)
+    X, y = X[shuffle_indices], y[shuffle_indices]
+
+    return X, y
+
 
 def generate_random_csv(
     file_path: str,
