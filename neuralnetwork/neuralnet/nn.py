@@ -1,5 +1,3 @@
-from neuralnetwork.layers.fullyconnectedayer import FullyConnectedLayer
-from neuralnetwork.losses.losses import MSE
 from typing import Callable
 import numpy as np
 from tqdm.auto import tqdm
