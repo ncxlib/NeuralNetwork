@@ -3,6 +3,7 @@ import os
 import nbformat as nbf
 import re
 
+
 def add_init_files():
     """
     Recursively adds __init__.py files to all folders and subfolders in specified directories
@@ -11,7 +12,14 @@ def add_init_files():
     remove_all_init_files()
 
     base_dir = os.path.abspath(os.path.dirname(__file__))
-    directories = ["neuralnetwork", "datasets", "dataloaders", "preprocessing", "generators"]
+    directories = [
+        "neuralnetwork",
+        "datasets",
+        "dataloaders",
+        "preprocessing",
+        "generators",
+        "logs"
+    ]
 
     for directory in directories:
         target_dir = os.path.join(base_dir, directory)
@@ -27,14 +35,23 @@ def add_init_files():
 
         # Generate __init__.py files with mkinit and clean imports
         subprocess.run(
-            ["mkinit", ".", "--recursive", "--write", "--nomods", "--relative", "--black"],
+            [
+                "mkinit",
+                ".",
+                "--recursive",
+                "--write",
+                "--nomods",
+                "--relative",
+                "--black",
+            ],
             cwd=target_dir,
             check=True,
         )
 
         update_init_files(directory)
 
-    move_layer_import_to_top()
+    move_layer_import_to_top("neuralnetwork/layers/__init__.py", "Layer")
+    move_layer_import_to_top("neuralnetwork/losses/__init__.py", "LossFunction")
 
 
 def fmt():
@@ -84,30 +101,33 @@ def notebook():
 
     print(f"Created notebook at {notebook_path}")
 
+
 def get_import_dependencies(module_name, dir):
     module_path = os.path.join(dir, f"{module_name}.py")
     dependencies = []
-    
+
     if os.path.exists(module_path):
-        with open(module_path, 'r') as f:
+        with open(module_path, "r") as f:
             for line in f:
                 match = "from" in line and "import" in line
                 if match:
                     dependency = line.split(" ")[3]
                     many_dependancies = dependency.split(",")
                     if len(many_dependancies) == 1:
-                        if many_dependancies[0].strip().lower() == "": 
+                        if many_dependancies[0].strip().lower() == "":
                             continue
                         dependencies.append(many_dependancies[0].strip().lower())
                     else:
                         for each in many_dependancies:
-                            if each.strip() == "": continue
+                            if each.strip() == "":
+                                continue
                             dependencies.append(each.strip().lower())
-                    
+
     return dependencies
 
+
 def get_import_order(file_path, dir):
-    with open(file_path, 'r') as f:
+    with open(file_path, "r") as f:
         lines = f.readlines()
 
     imports = {}
@@ -141,11 +161,11 @@ def get_import_order(file_path, dir):
             return
         visited.add(module)
         dependencies = get_import_dependencies(module, dir)
-        
+
         for dep in dependencies:
             if dep in imports:
                 dfs(dep)
-        
+
         ordered_imports.append(imports[module][1])
 
     for module in imports:
@@ -154,32 +174,34 @@ def get_import_order(file_path, dir):
 
     return ordered_imports
 
+
 def update_init_files(dir):
     for root, dirs, files in os.walk(dir):
-        if '__init__.py' in files:
-            init_file = os.path.join(root, '__init__.py')
+        if "__init__.py" in files:
+            init_file = os.path.join(root, "__init__.py")
             ordered_lines = get_import_order(init_file, dir)
 
-            with open(init_file, 'w') as f:
+            with open(init_file, "w") as f:
                 # f.write("# Automatically ordered imports\n")
-                f.write('\n'.join(ordered_lines) + '\n')
+                f.write("\n".join(ordered_lines) + "\n")
 
-def move_layer_import_to_top():
+
+def move_layer_import_to_top(init_path, module_name):
     """
     Moves the .layer import to the top of neuralnetwork/layers/__init__.py file,
     respecting multi-line Black-formatted import structure.
     """
-    layers_init_path = os.path.join("neuralnetwork", "layers", "__init__.py")
 
-    if os.path.exists(layers_init_path):
-        with open(layers_init_path, 'r') as f:
+    if os.path.exists(init_path):
+        with open(init_path, "r") as f:
             data = f.read()
 
-        layer_import = "from .layer import ( Layer, )\n"
-        data = data.replace("from .layer import (\nLayer,\n)", "")
+        layer_import = f"from .{module_name.lower()} import ( {module_name}, )\n"
+        data = data.replace(
+            f"from .{module_name.lower()} import (\n{module_name},\n)", ""
+        )
 
-        with open(layers_init_path, 'w') as f:
+        with open(init_path, "w") as f:
             f.writelines(layer_import + data)
 
-        print("Moved .layer imports to the top in neuralnetwork/layers/__init__.py")
-
+        print(f"Moved .{module_name.lower()} imports to the top in {init_path}")

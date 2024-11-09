@@ -27,9 +27,9 @@ class Sigmoid(Activation):
                 If input contains NaN or infinity values.
         """
 
-        typecheck(x)
+        # typecheck(x)
         one = np.array(1.0, dtype=x.dtype)
-        self.activated = one / (one + np.exp(x))
+        self.activated = one / (one + np.exp(-x))
         return self.activated
 
     def derivative(self, x: np.ndarray) -> np.ndarray:

@@ -10,8 +10,9 @@ Layer,
 OutputLayer,
 )
 from .losses import (
-MSE,
-cross_entropy,
+CrossEntropyLoss,
+LossFunction,
+MeanSquaredError,
 )
 from .neuralnet import (
 NeuralNetwork,

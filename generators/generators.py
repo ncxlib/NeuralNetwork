@@ -48,41 +48,52 @@ def integer_array(shape, low=0, high=10):
     """
     return np.random.randint(low, high, size=shape)
 
-def generate_training_data(num_samples=1000, num_features=2, label_ratio=0.5, random_seed=None):
+
+def generate_training_data(
+    num_samples=1000, num_features=2, label_ratio=0.5, random_seed=None, normalize=False
+):
     """
     Generates structured data for neural network training with labels 1/0.
     The data will have a pattern where positive and negative samples are separated into clusters.
-    
+
     Parameters:
     - num_samples (int): Total number of samples to generate.
     - num_features (int): Number of features for each sample.
     - label_ratio (float): Ratio of label 1 in the dataset. Should be between 0 and 1.
     - random_seed (int): Optional seed for reproducibility.
-    
+
     Returns:
     - X (np.ndarray): Generated feature matrix of shape (num_samples, num_features).
     - y (np.ndarray): Generated labels of shape (num_samples,).
     """
     if random_seed is not None:
         np.random.seed(random_seed)
-    
+
     num_label_1 = int(num_samples * label_ratio)
     num_label_0 = num_samples - num_label_1
-    
-    X_label_1 = np.random.randn(num_label_1, num_features) + 2  # Shift this cluster to distinguish
+
+    X_label_1 = (
+        np.random.randn(num_label_1, num_features) + 2
+    )  # Shift this cluster to distinguish
     y_label_1 = np.ones(num_label_1)
-    
+
     # Cluster for label 0
-    X_label_0 = np.random.randn(num_label_0, num_features) - 2  # Shift in the opposite direction
+    X_label_0 = (
+        np.random.randn(num_label_0, num_features) - 2
+    )  # Shift in the opposite direction
     y_label_0 = np.zeros(num_label_0)
-    
+
     # Combine the clusters
     X = np.vstack([X_label_1, X_label_0])
     y = np.hstack([y_label_1, y_label_0])
-    
+
     # Shuffle the dataset to mix labels
     shuffle_indices = np.random.permutation(num_samples)
     X, y = X[shuffle_indices], y[shuffle_indices]
+
+    if normalize:
+        X = (X - np.mean(X, axis=0)) / np.std(X, axis=0)
+
 
     return X, y
 
@@ -94,7 +105,7 @@ def generate_random_csv(
     num_categorical_features: int = 2,
     num_classes: int = 2,
     random_seed: int = None,
-    max_value: int = 100
+    max_value: int = 100,
 ):
     """
     Generates a random CSV file with specified characteristics.
@@ -111,21 +122,53 @@ def generate_random_csv(
     if random_seed is not None:
         np.random.seed(random_seed)
         random.seed(random_seed)
-    
+
     data = {}
-    
+
     for i in range(num_numeric_features):
-        data[f"num_feature_{i+1}"] = np.random.rand(num_rows) * max_value  
-    
+        data[f"num_feature_{i+1}"] = np.random.rand(num_rows) * max_value
+
     for i in range(num_categorical_features):
-        categories = [f"cat_{j}" for j in range(random.randint(2, 5))] 
-        data[f"cat_feature_{i+1}"] = [random.choice(categories) for _ in range(num_rows)]
-    
-    data["target"] = np.random.choice([f"class_{i}" for i in range(num_classes)], num_rows)
-    
+        categories = [f"cat_{j}" for j in range(random.randint(2, 5))]
+        data[f"cat_feature_{i+1}"] = [
+            random.choice(categories) for _ in range(num_rows)
+        ]
+
+    data["target"] = np.random.choice([i for i in range(num_classes)], num_rows)
+
     df = pd.DataFrame(data)
     df.to_csv(file_path, index=False)
     return df
 
+def train_test_split(X, y, test_size=0.2, random_state=None):
+    """Splits data into training and testing sets.
 
+    Args:
+        X (np.ndarray): Feature matrix.
+        y (np.ndarray): Target variable array.
+        test_size (float): Proportion of data to use for testing (default 0.2).
+        random_state (int): Optional random seed for reproducibility.
 
+    Returns:
+        X_train (np.ndarray): Training feature matrix.
+        X_test (np.ndarray): Testing feature matrix.
+        y_train (np.ndarray): Training target variable array.
+        y_test (np.ndarray): Testing target variable array.
+    """
+
+    if random_state is not None:
+        np.random.seed(random_state)
+
+    num_samples = len(X)
+    num_test_samples = int(test_size * num_samples)
+
+    indices = np.random.permutation(num_samples)
+
+    test_indices = indices[:num_test_samples]
+    train_indices = indices[num_test_samples:]
+
+    # Split the data
+    X_train, X_test = X[train_indices], X[test_indices]
+    y_train, y_test = y[train_indices], y[test_indices]
+
+    return X_train, X_test, y_train, y_test

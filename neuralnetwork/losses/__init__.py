@@ -1,4 +1,8 @@
-from .losses import (
-MSE,
-cross_entropy,
+from .lossfunction import ( LossFunction, )
+from .crossentropy import (
+CrossEntropyLoss,
+)
+
+from .meansquarederror import (
+MeanSquaredError,
 )

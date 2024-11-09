@@ -3,6 +3,7 @@ from datasets import CSVDataset
 from typing import Optional
 from preprocessing import Preprocessor
 
+
 class CSVDataLoader(DataLoader):
     def __init__(
         self, file_path, shuffle=False, preprocessors: Optional[list[Preprocessor]] = []

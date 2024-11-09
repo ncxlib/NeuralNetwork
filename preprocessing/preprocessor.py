@@ -1,8 +1,10 @@
 from abc import ABC, abstractmethod
 from datasets import Dataset
+
+
 class Preprocessor(ABC):
     def __init__(self):
-        pass 
+        pass
 
     @abstractmethod
     def apply(self, dataset: Dataset) -> Dataset:

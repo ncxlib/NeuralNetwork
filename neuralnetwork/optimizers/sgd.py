@@ -1,6 +1,6 @@
 from neuralnetwork.optimizers.optimizer import Optimizer
 import numpy as np
-from pprint import pprint
+
 
 class SGD(Optimizer):
     """
@@ -40,9 +40,9 @@ class SGD(Optimizer):
         updated_vars = []
         for i, (grad, var) in enumerate(grads_and_vars):
             if self.momentum:
-                if (self.velocity[i].shape != grad.shape):
-                    print(self.velocity[i], grad)
-                self.velocity[i] = self.momentum * self.velocity[i] - self.learning_rate * grad
+                self.velocity[i] = (
+                    self.momentum * self.velocity[i] - self.learning_rate * grad
+                )
                 updated_var = var + self.velocity[i]
             else:
                 # Direct gradient descent update without momentum

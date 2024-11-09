@@ -2,6 +2,7 @@ from abc import ABC
 import numpy as np
 import pandas as pd
 
+
 class Dataset(ABC):
     def __init__(self, data: pd.DataFrame):
         self.data = data

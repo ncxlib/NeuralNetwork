@@ -1,45 +1,64 @@
 from neuralnetwork.layers import Layer
-import numpy as np 
+import numpy as np
+from logs import log
+
 
 class OutputLayer(Layer):
-    def __init__(self, layer: Layer, n_inputs = None, n_neurons = None, activation = ..., optimizer = ...):
+    def __init__(
+        self,  layer: Layer, loss_fn, n_inputs=None, n_neurons=None, activation=..., optimizer=...
+    ):
         if layer:
-            super().__init__(layer.n_inputs, layer.n_neurons, layer.activation, layer.optimizer)
+            self.layer = layer
+            layer.loss_fn = loss_fn
+            super().__init__(
+                layer.n_inputs, layer.n_neurons, layer.activation, layer.optimizer, loss_fn=loss_fn
+            )
+
+    def initialize_params(self, inputs):
+        self.layer.initialize_params(inputs)
 
     def calculate_loss(self, y_pred: np.ndarray, y_orig: np.ndarray):
-        return self.loss_fn(y_pred, y_orig)
-    
-    def forward_propagation(self, inputs):
-        activations = super().forward_propagation(inputs)
+        return self.loss_fn.calculate_loss(y_pred, y_orig)
 
-        highest = np.argmax(activations) if self.n_neurons > 1 else (1 if activations[0] >= 0.5 else 0)
-        return activations, highest
-    
-    def back_propagation(self, y_orig, y_pred):
+    def forward_propagation(self, inputs, no_save=False):
+        return super().forward_propagation(inputs, no_save)
 
+    def back_propagation(self, y_true: np.ndarray, learning_rate: float) -> None:
 
-        # gradient wrt y_pred
-        grads_and_vars = []
+        log(f"Backward Propogation for Layer {self.layer.name} based on True Label: {y_true}: -----")
+        for index, neuron in enumerate(self.layer.neurons):
+            
+            log(f"\tNeuron: {neuron}")
 
-        for i, neuron in enumerate(self.neurons):
-            dl_dz = self.calc_gradient_wrt_z(neuron.calculate_neuron_weighted_sum(self.inputs), y_pred, y_orig)
+            activated = self.activation.apply(neuron.weighted_sum)
 
-            # weights, bias
-            dl_dw = self.calc_gradient_wrt_w(dl_dz, self.inputs)
-            dl_db = self.calc_gradient_wrt_b(dl_dz)
+            activated = np.clip(activated, 1e-7, 1 - 1e-7)
 
+            log(f"\ta(z) = {activated}")
+            log(f"\ty_true for neuron {index} = {y_true[index]}")
 
-            grads_and_vars.append((dl_dw, neuron.weights)) 
-            grads_and_vars.append((dl_db, neuron.bias)) 
+            # For cross entropy right now
+            dl_da = (activated - y_true[index]) / (activated * (1 - activated))
 
-        # pass to optimizer
-        grads_and_vars = self.optimizer.apply_gradients(grads_and_vars)
+            da_dz = self.activation.derivative(neuron.weighted_sum)
 
-        idx = 0
-        for neuron in self.neurons:
-            neuron.weights = grads_and_vars[idx]
-            idx += 1
-            neuron.bias = grads_and_vars[idx]
-            idx += 1
-        
-    
+            dl_dz = dl_da * da_dz
+
+            log(f"\tdl_da = {dl_da}")
+            log(f"\tda_dz = {da_dz}")
+            log(f"\tdl_dz = {dl_dz}")
+            
+            neuron.old_weights = neuron.weights.copy()
+
+            # TODO: Switch to optimizer
+            for i in range(len(neuron.weights)):
+                dz_dwi = neuron.inputs[i]
+                dl_dwi = dl_dz * dz_dwi
+                neuron.weights[i] -=  learning_rate * dl_dwi
+
+            neuron.bias -= learning_rate * dl_dz
+
+            log(f"\tUpdated Weights: {neuron.weights}")
+            log(f"\tUpdated Bias: {neuron.bias}")
+
+            neuron.gradient = dl_dz
