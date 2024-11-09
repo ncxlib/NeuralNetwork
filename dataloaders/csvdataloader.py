@@ -13,3 +13,16 @@ class CSVDataLoader(DataLoader):
         self.set_indices(len(self.dataset))
 
         self.preprocess()
+
+    def get_data(self):
+        """
+        Extracts features (X) and target (y) from the dataset.
+
+        Returns:
+        - X (np.ndarray): Feature matrix.
+        - y (np.ndarray): Target variable array.
+        """
+        df = self.dataset.data 
+        X = df.drop(columns=["target"]).values 
+        y = df["target"].values
+        return X, y

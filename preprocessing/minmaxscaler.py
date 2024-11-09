@@ -18,9 +18,13 @@ class MinMaxScaler(Scaler):
             )
 
         array_data = data.select_dtypes(include=[list, np.ndarray])
+        skip_col = False
         for col in array_data.columns:
             scaled_column = []
             for x in data[col].tolist():
+                if (not self.is_numeric_array(x) and col != "data") or col in ["target", "title"]: 
+                    skip_col = True
+                    break
                 x_array = np.array(x)
 
                 if x_array.ndim == 1:
@@ -48,7 +52,24 @@ class MinMaxScaler(Scaler):
 
                 scaled_column.append(scaled_array)
 
+            if skip_col: continue
             data[col] = scaled_column
 
         dataset.data = data
         return dataset
+    
+    def is_numeric_array(self, data):
+        """Checks if the data is a numeric type or a list/array of numeric types.
+
+        Args:
+            data: The data to check.
+
+        Returns:
+            bool: True if the data is numeric, False otherwise.
+        """
+        if isinstance(data, (int, float)):
+            return True
+        elif isinstance(data, (list, np.ndarray)):
+            return all(isinstance(elem, (int, float)) for elem in data)
+        else:
+            return False

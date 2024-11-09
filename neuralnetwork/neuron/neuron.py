@@ -1,4 +1,5 @@
 import numpy as np
+from logs import log
 
 
 class Neuron:
@@ -28,6 +29,7 @@ class Neuron:
 
             Weighted Sum: z = w1 ⋅ x1 + w2 ⋅ x2 + ...+ wn ⋅ xn + b
         """
+        log(f"Calculating weighted sum: {self.weights.shape} * {self.inputs.shape} + {self.bias}")
         weighted_sum = np.dot(self.weights, self.inputs) + self.bias
         if not no_save:
             self.weighted_sum = weighted_sum 

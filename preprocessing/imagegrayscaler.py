@@ -21,13 +21,15 @@ class ImageGrayscaler(Preprocessor):
 
         data = dataset.data.copy()
         for _, row in data.iterrows():
-            rgb_pixels = row["pixels"]
+            rgb_pixels = row["data"]
             grayscale_image = self.img_to_grayscale(rgb_pixels)
             img_array = np.array(grayscale_image)
-            imgs.append({"image_name": row["image_name"], "pixels": img_array})
+            imgs.append({"title": row["title"], "data": img_array, "target": row["target"]})
 
         dataframe = pd.DataFrame(imgs)
-        dataframe["image_name"] = dataframe["image_name"].astype("string")
+        dataframe["title"] = dataframe["title"].astype("string")
+        if not dataset.label_numeric:
+            dataframe["target"] = dataframe["target"].astype("string")
 
         return dataframe
 

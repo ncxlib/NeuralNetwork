@@ -27,14 +27,16 @@ class ImageRescaler(Preprocessor):
 
         data = dataset.data.copy()
         for _, row in data.iterrows():
-            rgb_pixels = row["pixels"]
+            rgb_pixels = row["data"]
             resized_image = self.resize_image(rgb_pixels)
             resized_imgs.append(
-                {"image_name": row["image_name"], "pixels": resized_image}
+                {"title": row["title"], "data": resized_image, "target": row["target"]}
             )
 
         dataframe = pd.DataFrame(resized_imgs)
-        dataframe["image_name"] = dataframe["image_name"].astype("string")
+        dataframe["title"] = dataframe["title"].astype("string")
+        if not dataset.label_numeric:
+            dataframe["target"] = dataframe["target"].astype("string")
 
         return dataframe
 

@@ -17,3 +17,6 @@ class DataLoader(ABC):
         self.indices = np.arange(dataset_length)
         if self.shuffle:
             np.random.shuffle(self.indices)
+
+    def get_data(self) -> tuple[np.ndarray, np.ndarray]:
+        pass

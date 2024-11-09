@@ -11,8 +11,14 @@ class NeuralNetwork:
         self.compiled = False
         self.loss_fn = loss_fn
 
-    def _compile(self, inputs: np.ndarray) -> None:
+    def _compile(self, inputs: np.ndarray, targets: np.ndarray) -> None:
         self.compiled = True
+
+        try:
+            targets = targets.astype(np.uint)
+        except:
+            raise ValueError("Labels should be of integer type, if they are categorical, please use OneHotEncoder Preprocessor")
+            
 
         self.layers = [InputLayer(1, inputs.shape[1])] + self.layers
 
@@ -66,7 +72,7 @@ class NeuralNetwork:
     ):
 
         if not self.compiled:
-            self._compile(inputs)
+            self._compile(inputs, targets)
 
         progress = tqdm(range(epochs))
         loss = np.inf
@@ -81,13 +87,16 @@ class NeuralNetwork:
                 input_vector = inputs[i]
                 class_label = int(targets[i])
                 
-                y_true = np.zeros(len(np.unique(targets)))
+                y_true = np.zeros(self.layers[-1].n_neurons)
                 y_true[class_label] = 1
 
-                log(f"NEW DATA POINT: {i}: {inputs[i]} | LABEL: {y_true}")
+                log(f"NEW DATA POINT: {i}| LABEL: {y_true}")
 
                 output_activations = self.forward_propagate_all(input_vector)
                 output_activations = np.clip(output_activations, 1e-7, 1 - 1e-7) 
+
+                log(f"Size: true: {y_true.shape}, activations: {output_activations.shape}")
+
                 sample_loss = self.loss_fn().compute_loss(y_true, output_activations)
                 total_loss += sample_loss
                 self.back_propagation(y_true, learning_rate)

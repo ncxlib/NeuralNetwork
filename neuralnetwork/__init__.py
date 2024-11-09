@@ -2,6 +2,7 @@ from .activations import (
 Activation,
 ReLU,
 Sigmoid,
+Softmax,
 )
 from .layers import (
 FullyConnectedLayer,
@@ -10,7 +11,8 @@ Layer,
 OutputLayer,
 )
 from .losses import (
-CrossEntropyLoss,
+BinaryCrossEntropy,
+CategoricalCrossEntropy,
 LossFunction,
 MeanSquaredError,
 )

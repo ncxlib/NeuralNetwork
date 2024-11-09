@@ -49,22 +49,33 @@ def integer_array(shape, low=0, high=10):
     return np.random.randint(low, high, size=shape)
 
 
+
 def generate_training_data(
-    num_samples=1000, num_features=2, label_ratio=0.5, random_seed=None, normalize=False
+    num_samples=1000,
+    num_features=2,
+    label_ratio=0.5,
+    random_seed=None,
+    normalize=False,
+    to_csv=False,
+    file_path="training_data.csv",
 ):
     """
     Generates structured data for neural network training with labels 1/0.
-    The data will have a pattern where positive and negative samples are separated into clusters.
+    The data will have a pattern where positive and negative samples are 
+    separated into clusters.
 
     Parameters:
     - num_samples (int): Total number of samples to generate.
     - num_features (int): Number of features for each sample.
-    - label_ratio (float): Ratio of label 1 in the dataset. Should be between 0 and 1.
+    - label_ratio (float): Ratio of label 1 in the dataset (0 to 1).
     - random_seed (int): Optional seed for reproducibility.
+    - normalize (bool): Whether to normalize features.
+    - to_csv (bool): Whether to save the data to a CSV file.
+    - file_path (str): Path to save the CSV file (if to_csv=True).
 
     Returns:
-    - X (np.ndarray): Generated feature matrix of shape (num_samples, num_features).
-    - y (np.ndarray): Generated labels of shape (num_samples,).
+    - X (np.ndarray): Feature matrix (num_samples, num_features).
+    - y (np.ndarray): Labels (num_samples,).
     """
     if random_seed is not None:
         np.random.seed(random_seed)
@@ -72,73 +83,28 @@ def generate_training_data(
     num_label_1 = int(num_samples * label_ratio)
     num_label_0 = num_samples - num_label_1
 
-    X_label_1 = (
-        np.random.randn(num_label_1, num_features) + 2
-    )  # Shift this cluster to distinguish
+    X_label_1 = np.random.randn(num_label_1, num_features) + 2
     y_label_1 = np.ones(num_label_1)
 
-    # Cluster for label 0
-    X_label_0 = (
-        np.random.randn(num_label_0, num_features) - 2
-    )  # Shift in the opposite direction
+    X_label_0 = np.random.randn(num_label_0, num_features) - 2
     y_label_0 = np.zeros(num_label_0)
 
-    # Combine the clusters
     X = np.vstack([X_label_1, X_label_0])
     y = np.hstack([y_label_1, y_label_0])
 
-    # Shuffle the dataset to mix labels
     shuffle_indices = np.random.permutation(num_samples)
     X, y = X[shuffle_indices], y[shuffle_indices]
 
     if normalize:
         X = (X - np.mean(X, axis=0)) / np.std(X, axis=0)
 
+    if to_csv:
+        data = {f"feature_{i+1}": X[:, i] for i in range(num_features)}
+        data["target"] = y
+        df = pd.DataFrame(data)
+        df.to_csv(file_path, index=False)
 
     return X, y
-
-
-def generate_random_csv(
-    file_path: str,
-    num_rows: int = 100,
-    num_numeric_features: int = 3,
-    num_categorical_features: int = 2,
-    num_classes: int = 2,
-    random_seed: int = None,
-    max_value: int = 100,
-):
-    """
-    Generates a random CSV file with specified characteristics.
-
-    Parameters:
-    - file_path (str): Path to save the generated CSV file.
-    - num_rows (int): Number of rows in the generated CSV.
-    - num_numeric_features (int): Number of numeric features (columns).
-    - num_categorical_features (int): Number of categorical features (columns).
-    - num_classes (int): Number of unique classes for the target column.
-    - random_seed (int): Seed for reproducibility.
-    - max_value (int): Max value for each numeric
-    """
-    if random_seed is not None:
-        np.random.seed(random_seed)
-        random.seed(random_seed)
-
-    data = {}
-
-    for i in range(num_numeric_features):
-        data[f"num_feature_{i+1}"] = np.random.rand(num_rows) * max_value
-
-    for i in range(num_categorical_features):
-        categories = [f"cat_{j}" for j in range(random.randint(2, 5))]
-        data[f"cat_feature_{i+1}"] = [
-            random.choice(categories) for _ in range(num_rows)
-        ]
-
-    data["target"] = np.random.choice([i for i in range(num_classes)], num_rows)
-
-    df = pd.DataFrame(data)
-    df.to_csv(file_path, index=False)
-    return df
 
 def train_test_split(X, y, test_size=0.2, random_state=None):
     """Splits data into training and testing sets.

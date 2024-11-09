@@ -1,6 +1,9 @@
 from .lossfunction import ( LossFunction, )
-from .crossentropy import (
-CrossEntropyLoss,
+from .binarycrossentropy import (
+BinaryCrossEntropy,
+)
+from .categoricalcrossentropy import (
+CategoricalCrossEntropy,
 )
 
 from .meansquarederror import (

@@ -13,3 +13,6 @@ Scaler,
 from .minmaxscaler import (
 MinMaxScaler,
 )
+from .onehotencoder import (
+OneHotEncoder,
+)
