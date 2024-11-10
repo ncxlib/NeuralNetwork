@@ -20,12 +20,12 @@ Here's a quick example of how to use ncxlib to create and train a simple neural 
 
 ```python
 import numpy as np
-from ncxlib.dataloaders import ImageDataLoader, CSVDataLoader
-from ncxlib.preprocessing import MinMaxScaler, ImageGrayscaler, ImageRescaler
+from ncxlib.dataloaders import CSVDataLoader
+from ncxlib.preprocessing import MinMaxScaler
 from ncxlib.neuralnetwork import NeuralNetwork
 from ncxlib.neuralnetwork.layers import FullyConnectedLayer
-from ncxlib.neuralnetwork.activations import Sigmoid, ReLU, Softmax
-from ncxlib.neuralnetwork.losses import BinaryCrossEntropy, MeanSquaredError
+from ncxlib.neuralnetwork.activations import Sigmoid, ReLU
+from ncxlib.neuralnetwork.losses import BinaryCrossEntropy
 from ncxlib.generators import generate_training_data, train_test_split
 
 # Generate synthetic data

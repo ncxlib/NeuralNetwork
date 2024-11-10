@@ -6,7 +6,7 @@ authors = ["neelthepatel <patel.neel5@northeastern.edu>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = "^3.9"
 numpy = ">=1.26.0, <2.1.0"
 mkinit = "^1.1.0"
 nbformat = "^5.10.4"
