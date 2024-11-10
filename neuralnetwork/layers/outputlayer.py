@@ -1,6 +1,6 @@
 from neuralnetwork.layers import Layer
 import numpy as np
-from logs import log
+from util import log
 
 
 class OutputLayer(Layer):

@@ -3,7 +3,7 @@ import numpy as np
 from tqdm.auto import tqdm
 from neuralnetwork.layers import Layer, InputLayer, OutputLayer
 from neuralnetwork.losses import LossFunction, MeanSquaredError
-from logs import log
+from util import log
 
 class NeuralNetwork:
     def __init__(self, layers: Optional[list[Layer]] = [], loss_fn: Optional[LossFunction] = MeanSquaredError):
@@ -109,6 +109,7 @@ class NeuralNetwork:
 
     def evaluate(self, inputs, targets):
         predictions = self.predict(inputs)
+        print(predictions)
         accuracy = np.mean(predictions == targets)
         print(f"Accuracy: {accuracy * 100:.2f}%")
 

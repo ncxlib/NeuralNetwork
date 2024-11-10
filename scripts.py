@@ -18,7 +18,7 @@ def add_init_files():
         "dataloaders",
         "preprocessing",
         "generators",
-        "logs"
+        "util"
     ]
 
     for directory in directories:

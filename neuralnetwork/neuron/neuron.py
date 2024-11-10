@@ -1,5 +1,5 @@
 import numpy as np
-from logs import log
+from util import log
 
 
 class Neuron:
