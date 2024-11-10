@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "neuralnetwork"
+name = "ncxlib"
 version = "0.1.0"
 description = "Neural Network lib for ncxlib"
 authors = ["neelthepatel <patel.neel5@northeastern.edu>"]

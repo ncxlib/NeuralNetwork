@@ -20,6 +20,9 @@ def add_init_files():
         "generators",
         "util"
     ]
+    directories = [f"ncxlib/{file}" for file in directories]
+
+
 
     for directory in directories:
         target_dir = os.path.join(base_dir, directory)
@@ -50,8 +53,8 @@ def add_init_files():
 
         update_init_files(directory)
 
-    move_layer_import_to_top("neuralnetwork/layers/__init__.py", "Layer")
-    move_layer_import_to_top("neuralnetwork/losses/__init__.py", "LossFunction")
+    move_layer_import_to_top("ncxlib/neuralnetwork/layers/__init__.py", "Layer")
+    move_layer_import_to_top("ncxlib/neuralnetwork/losses/__init__.py", "LossFunction")
 
 
 def fmt():
