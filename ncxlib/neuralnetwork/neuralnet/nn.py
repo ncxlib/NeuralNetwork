@@ -2,8 +2,9 @@ from typing import Optional
 import numpy as np
 from tqdm.auto import tqdm
 from ncxlib.neuralnetwork.layers import Layer, InputLayer, OutputLayer
-from ncxlib.neuralnetwork.losses import LossFunction, MeanSquaredError
+from ncxlib.neuralnetwork.losses import LossFunction, MeanSquaredError, BinaryCrossEntropy
 from ncxlib.util import log
+import h5py
 
 class NeuralNetwork:
     def __init__(self, layers: Optional[list[Layer]] = [], loss_fn: Optional[LossFunction] = MeanSquaredError):
@@ -111,4 +112,44 @@ class NeuralNetwork:
         predictions = self.predict(inputs)
         accuracy = np.mean(predictions == targets)
         print(f"Accuracy: {accuracy * 100:.2f}%")
+    
+    def save_model(self, filepath):
+        '''
+        Function: 
+            Saves the model as a .h5 file that stores each layers neurons, weights, bias, loss fn and
+            activation function.
+        '''
+        h5_suffix = ".h5"
+        final_path = filepath + h5_suffix
+        with h5py.File(final_path, 'w') as f:
+            loss_fn_name = self.loss_fn.__name__ if hasattr(self.loss_fn, '__name__') else self.loss_fn.__class__.__name__
+            print(f"Saving loss function: {loss_fn_name}")  
 
+            f.attrs['loss_function'] = loss_fn_name
+            f.attrs['num_layers'] = len(self.layers)
+
+            for i, layer in enumerate(self.layers):
+                if layer.neurons is not None:
+                    for j, neuron in enumerate(layer.neurons):
+                        f.create_dataset(f"layer_{i}_neuron_{j}_weights", data=neuron.weights)
+                        f.create_dataset(f"layer_{i}_neuron_{j}_bias", data=neuron.bias)
+                    f.attrs[f"layer_{i}_activation"] = layer.activation.__class__.__name__
+                else:
+                    print(f"Skipping layer {i} since it has no neurons")  
+
+        print(f"Model saved to {final_path}")
+    
+    # verify final wts/bias against saved models wts/bias
+    def print_final_weights_biases(self):
+        print("Final Weights and Biases After Training:")
+        for i, layer in enumerate(self.layers):
+            if layer.neurons is not None:
+                print(f"Layer {i}:")
+                for j, neuron in enumerate(layer.neurons):
+                    print(f"  Neuron {j} weights: {neuron.weights}")
+                    print(f"  Neuron {j} bias: {neuron.bias}")
+            else:
+                print(f"Layer {i} has no neurons")
+
+
+   
