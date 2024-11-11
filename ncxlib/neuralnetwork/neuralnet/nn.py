@@ -3,7 +3,7 @@ import numpy as np
 from tqdm.auto import tqdm
 from ncxlib.neuralnetwork.layers import Layer, InputLayer, OutputLayer
 from ncxlib.neuralnetwork.losses import LossFunction, MeanSquaredError, BinaryCrossEntropy
-from ncxlib.util import log
+from ncxlib.util import log, timer, show_time, time_this
 import h5py
 
 class NeuralNetwork:
@@ -37,9 +37,6 @@ class NeuralNetwork:
 
         self.output_layer = OutputLayer(self.layers[-1], loss_fn = self.loss_fn)
 
-        for layer in self.layers:
-            log(layer)
-
     def add_layer(self, layer):
         self.layers.append(layer)
 
@@ -64,6 +61,7 @@ class NeuralNetwork:
             layer.back_propagation(next_layer, learning_rate)
             next_layer = layer
         
+    @timer
     def train(
         self,
         inputs: np.ndarray,
@@ -82,28 +80,26 @@ class NeuralNetwork:
             progress.set_description(f"Epoch: {epoch} | Loss: {loss}")
             
             total_loss = 0
+
             
             for i in range(len(inputs)):
 
                 input_vector = inputs[i]
                 class_label = int(targets[i])
                 
-                y_true = np.zeros(self.layers[-1].n_neurons)
+                y_true = np.zeros((self.layers[-1].n_neurons, 1))
                 y_true[class_label] = 1
 
-                log(f"NEW DATA POINT: {i}| LABEL: {y_true}")
-
                 output_activations = self.forward_propagate_all(input_vector)
+
                 output_activations = np.clip(output_activations, 1e-7, 1 - 1e-7) 
-
-                log(f"Size: true: {y_true.shape}, activations: {output_activations.shape}")
-
                 sample_loss = self.loss_fn().compute_loss(y_true, output_activations)
                 total_loss += sample_loss
+
                 self.back_propagation(y_true, learning_rate)
-                
 
             loss = total_loss / len(inputs)
+        
 
     def predict(self, inputs):
         return [np.argmax(self.forward_propagate_all_no_save(input)) for input in inputs]

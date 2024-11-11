@@ -1,3 +1,0 @@
-from .neuron import (
-Neuron,
-)
