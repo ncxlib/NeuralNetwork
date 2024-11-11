@@ -36,7 +36,6 @@ class FullyConnectedLayer(Layer):
         
        
         self.initialize_params(inputs)
-        log(f"Forward Propogation for Layer {self.name} with inputs {self.inputs} -----")
 
         # calculate weighted sum: Wx + b
         weighted_sum = np.dot(self.W, self.inputs) + self.b
@@ -49,19 +48,13 @@ class FullyConnectedLayer(Layer):
             self.z = weighted_sum
             self.activated = activated
 
-        log(f"Results: {activated}")
         return activated
     
     def back_propagation(self, next_layer: Layer, learning_rate: float) -> np.ndarray:
-        
-        log(f"Backward Propogation for Layer {self.name} based on {next_layer.name}: -----")
 
         da_dz = self.activation.derivative(self.z) 
 
         dl_dz = (next_layer.old_W.T @ next_layer.gradients) * da_dz 
-
-        log(f"da_dz = {da_dz}")
-        log(f"dl_dz = {dl_dz}")
 
         self.old_W = self.W.copy()
 
@@ -70,8 +63,5 @@ class FullyConnectedLayer(Layer):
 
         self.W -= learning_rate * dl_dw
         self.b -= learning_rate * dl_dz
-
-        log(f"Updated Weights: {self.W}")
-        log(f"Updated Bias: {self.b}")
 
         self.gradients = dl_dz
