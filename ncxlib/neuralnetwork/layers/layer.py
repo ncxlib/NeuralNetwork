@@ -29,9 +29,34 @@ class Layer(ABC):
         self.loss_fn = loss_fn()
         self.name = name
 
-    @abstractmethod
-    def initialize_params(self, inputs):
-        pass
+
+        # inputs remain same for all so just store in n_inputs x 1
+        self.inputs = None
+
+        # weights size:  n_neurons * n_inputs
+        self.W = None  
+        self.old_W = None
+
+        # bias and weighted sums size : n_neurons x 1
+        self.b = None 
+        self.z = None
+
+        # gradients size n_neurons x 1
+        self.gradients = None
+
+        # activated outputs (store for output layer only) size n_neurons x 1
+        self.activated = None
+
+    def initialize_params(self, inputs: np.ndarray):
+
+        # inputs always get updated
+        self.inputs = inputs.reshape((self.n_inputs, 1))
+
+        # only initialize if not initialized yet, if not use previously learned values
+        if self.W is None or self.b is None:
+            # self.W = np.zeros((self.n_neurons, self.n_inputs))
+            self.W = np.random.randn(self.n_neurons, self.n_inputs) * np.sqrt(2 / self.n_inputs) 
+            self.b = np.zeros((self.n_neurons, 1))
 
     @abstractmethod
     def forward_propagation(self, inputs: np.ndarray, no_save: Optional[bool] = False) -> np.ndarray:
@@ -60,8 +85,5 @@ class Layer(ABC):
     def calc_gradient_wrt_y_pred(self, y_pred, y_orig):
         return 2 * (y_pred - y_orig) / self.n_inputs
 
-    def calculate_loss(self, y_pred: np.ndarray, y_orig: np.ndarray):
-        return 0
-    
     def __repr__(self):
         return f"Layer {self.name}: {{\n\tN_Inputs: {self.n_inputs}\n\tN_Neurons: {self.n_neurons} \n}}"
