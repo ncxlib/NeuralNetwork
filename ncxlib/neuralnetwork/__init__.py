@@ -19,9 +19,6 @@ MeanSquaredError,
 from .neuralnet import (
 NeuralNetwork,
 )
-from .neuron import (
-Neuron,
-)
 from .optimizers import (
 Optimizer,
 SGD,
