@@ -3,7 +3,7 @@ import numpy as np
 from tqdm.auto import tqdm
 from ncxlib.neuralnetwork.layers import Layer, InputLayer, OutputLayer
 from ncxlib.neuralnetwork.losses import LossFunction, MeanSquaredError
-from ncxlib.util import log
+from ncxlib.util import log, timer, show_time, time_this
 
 class NeuralNetwork:
     def __init__(self, layers: Optional[list[Layer]] = [], loss_fn: Optional[LossFunction] = MeanSquaredError):
@@ -63,6 +63,7 @@ class NeuralNetwork:
             layer.back_propagation(next_layer, learning_rate)
             next_layer = layer
         
+    @timer
     def train(
         self,
         inputs: np.ndarray,
@@ -77,10 +78,13 @@ class NeuralNetwork:
         progress = tqdm(range(epochs))
         loss = np.inf
 
+        forward_time, backward_time = 0, 0
+
         for epoch in progress:
             progress.set_description(f"Epoch: {epoch} | Loss: {loss}")
             
             total_loss = 0
+
             
             for i in range(len(inputs)):
 
@@ -92,17 +96,26 @@ class NeuralNetwork:
 
                 log(f"NEW DATA POINT: {i}| LABEL: {y_true}")
 
-                output_activations = self.forward_propagate_all(input_vector)
+                output_activations, t = time_this(self.forward_propagate_all, input_vector)
+                forward_time += t
+
                 output_activations = np.clip(output_activations, 1e-7, 1 - 1e-7) 
 
                 log(f"Size: true: {y_true.shape}, activations: {output_activations.shape}")
 
                 sample_loss = self.loss_fn().compute_loss(y_true, output_activations)
                 total_loss += sample_loss
-                self.back_propagation(y_true, learning_rate)
+
+                _, t = time_this(self.back_propagation, y_true, learning_rate)
+
+                backward_time += t
                 
 
             loss = total_loss / len(inputs)
+
+        show_time(forward_time, "Forward Propogation")
+        show_time(backward_time, "Backward Propogation")
+        
 
     def predict(self, inputs):
         return [np.argmax(self.forward_propagate_all_no_save(input)) for input in inputs]
