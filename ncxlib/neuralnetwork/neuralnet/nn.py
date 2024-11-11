@@ -91,7 +91,7 @@ class NeuralNetwork:
                 input_vector = inputs[i]
                 class_label = int(targets[i])
                 
-                y_true = np.zeros(self.layers[-1].n_neurons)
+                y_true = np.zeros((self.layers[-1].n_neurons, 1))
                 y_true[class_label] = 1
 
                 log(f"NEW DATA POINT: {i}| LABEL: {y_true}")

@@ -14,51 +14,39 @@ class OutputLayer(Layer):
                 layer.n_inputs, layer.n_neurons, layer.activation, layer.optimizer, loss_fn=loss_fn
             )
 
-    def initialize_params(self, inputs):
-        self.layer.initialize_params(inputs)
-
-    def calculate_loss(self, y_pred: np.ndarray, y_orig: np.ndarray):
-        return self.loss_fn.calculate_loss(y_pred, y_orig)
-
-    def forward_propagation(self, inputs, no_save=False):
-        return super().forward_propagation(inputs, no_save)
+    def forward_propagation(self, inputs, no_save):
+        return self.layer.forward_propagation(inputs, no_save)
 
     def back_propagation(self, y_true: np.ndarray, learning_rate: float) -> None:
 
-        log(f"Backward Propogation for Layer {self.layer.name} based on True Label: {y_true}: -----")
-        for index, neuron in enumerate(self.layer.neurons):
-            
-            log(f"\tNeuron: {neuron}")
+        log(f"Backward Propagation for Layer {self.layer.name} based on True Label: {y_true}: -----")
+    
+        activated = np.clip(self.layer.activated, 1e-7, 1 - 1e-7)
 
-            activated = self.activation.apply(neuron.weighted_sum)
+        dl_da = (activated - y_true) / (activated * (1 - activated)) 
 
-            activated = np.clip(activated, 1e-7, 1 - 1e-7)
+        da_dz = self.layer.activation.derivative(self.layer.z)
 
-            log(f"\ta(z) = {activated}")
-            log(f"\ty_true for neuron {index} = {y_true[index]}")
+        dl_dz = dl_da * da_dz 
 
-            # For cross entropy right now
-            dl_da = (activated - y_true[index]) / (activated * (1 - activated))
+        log(f"activated_z: {activated}")
+        log(f"dl_da: {dl_da}")
+        log(f"da_dz: {da_dz}")
+        log(f"dl_dz: {dl_dz}")
+        log(f"self.layer.inputs.T: {self.layer.inputs.T}")
+        log(f"self.layer.W: {self.layer.W}")
 
-            da_dz = self.activation.derivative(neuron.weighted_sum)
+        self.layer.gradients = dl_dz
+        self.layer.old_W = self.layer.W.copy()
 
-            dl_dz = dl_da * da_dz
+        dw = dl_dz @ self.layer.inputs.T 
+        log(f"dw: {dw}")
+        self.layer.W -= learning_rate * dw
 
-            log(f"\tdl_da = {dl_da}")
-            log(f"\tda_dz = {da_dz}")
-            log(f"\tdl_dz = {dl_dz}")
-            
-            neuron.old_weights = neuron.weights.copy()
+        # Calculate the bias gradient as the sum of dl_dz across all samples
+        db = np.sum(dl_dz, axis=1, keepdims=True)  # Shape: (n_neurons, 1)
+        self.layer.b -= learning_rate * db  # Update biases
 
-            # TODO: Switch to optimizer
-            for i in range(len(neuron.weights)):
-                dz_dwi = neuron.inputs[i]
-                dl_dwi = dl_dz * dz_dwi
-                neuron.weights[i] -=  learning_rate * dl_dwi
-
-            neuron.bias -= learning_rate * dl_dz
-
-            log(f"\tUpdated Weights: {neuron.weights}")
-            log(f"\tUpdated Bias: {neuron.bias}")
-
-            neuron.gradient = dl_dz
+        # Log the updated weights and biases if needed
+        log(f"Updated Weights: {self.layer.W}")
+        log(f"Updated Biases: {self.layer.b}")
