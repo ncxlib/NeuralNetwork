@@ -114,24 +114,23 @@ class NeuralNetwork:
         Function: 
             Saves the model as a .h5 file that stores each layers neurons, weights, bias, loss fn and
             activation function.
+
+            ** Note: Do not add .h5 to the end of your filepath. This will be added automatically.
         '''
         h5_suffix = ".h5"
         final_path = filepath + h5_suffix
         with h5py.File(final_path, 'w') as f:
             loss_fn_name = self.loss_fn.__name__ if hasattr(self.loss_fn, '__name__') else self.loss_fn.__class__.__name__
-            print(f"Saving loss function: {loss_fn_name}")  
-
             f.attrs['loss_function'] = loss_fn_name
             f.attrs['num_layers'] = len(self.layers)
 
             for i, layer in enumerate(self.layers):
-                if layer.neurons is not None:
-                    for j, neuron in enumerate(layer.neurons):
-                        f.create_dataset(f"layer_{i}_neuron_{j}_weights", data=neuron.weights)
-                        f.create_dataset(f"layer_{i}_neuron_{j}_bias", data=neuron.bias)
+                if layer.W is not None and layer.b is not None:
+                    f.create_dataset(f"layer_{i}_weights", data=layer.W)
+                    f.create_dataset(f"layer_{i}_bias", data=layer.b)
                     f.attrs[f"layer_{i}_activation"] = layer.activation.__class__.__name__
                 else:
-                    print(f"Skipping layer {i} since it has no neurons")  
+                    print(f"Skipping layer {i} as it has no weights or biases")  
 
         print(f"Model saved to {final_path}")
     
@@ -139,13 +138,13 @@ class NeuralNetwork:
     def print_final_weights_biases(self):
         print("Final Weights and Biases After Training:")
         for i, layer in enumerate(self.layers):
-            if layer.neurons is not None:
+            if layer.W is not None and layer.b is not None:
                 print(f"Layer {i}:")
-                for j, neuron in enumerate(layer.neurons):
-                    print(f"  Neuron {j} weights: {neuron.weights}")
-                    print(f"  Neuron {j} bias: {neuron.bias}")
+                print(f"  Weights:\n{layer.W}")
+                print(f"  Bias:\n{layer.b}")
             else:
-                print(f"Layer {i} has no neurons")
+                print(f"Layer {i} has no weights or biases")
+
 
 
    
