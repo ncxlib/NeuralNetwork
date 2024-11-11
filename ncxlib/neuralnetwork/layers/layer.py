@@ -54,7 +54,8 @@ class Layer(ABC):
 
         # only initialize if not initialized yet, if not use previously learned values
         if self.W is None or self.b is None:
-            self.W = np.zeros((self.n_neurons, self.n_inputs))
+            # self.W = np.zeros((self.n_neurons, self.n_inputs))
+            self.W = np.random.randn(self.n_neurons, self.n_inputs) * np.sqrt(2 / self.n_inputs) 
             self.b = np.zeros((self.n_neurons, 1))
 
     @abstractmethod
