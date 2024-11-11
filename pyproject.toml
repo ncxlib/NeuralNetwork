@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ncxlib"
-version = "0.2.1"
+version = "0.2.2"
 description = "Neural Network lib for ncxlib"
 authors = [
     "neelthepatel <patel.neel5@northeastern.edu>",
