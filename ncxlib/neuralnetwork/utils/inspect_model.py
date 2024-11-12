@@ -10,9 +10,16 @@ def inspect_saved_model(filepath):
             print(f"{attr}: {f.attrs[attr]}")
 
         print("\nLayers and Neurons:")
-        for key in f.keys():
-            dataset = f[key]
-            if dataset.shape == ():  
-                print(f"{key}: {dataset[()]}")
-            else:
-                print(f"{key}: {dataset[:]}")
+        
+        num_layers = f.attrs.get("num_layers", 0)
+        for i in range(num_layers):
+            activation = f.attrs.get(f"layer_{i}_activation", "None")
+            print(f"layer_{i}_activation: {activation}")
+            
+            weights_key = f"layer_{i}_weights"
+            bias_key = f"layer_{i}_bias"
+            
+            if weights_key in f:
+                print(f"{weights_key}: {f[weights_key][:]}")
+            if bias_key in f:
+                print(f"{bias_key}: {f[bias_key][:]}")

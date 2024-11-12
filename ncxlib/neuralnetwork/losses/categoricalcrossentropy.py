@@ -11,3 +11,4 @@ class CategoricalCrossEntropy(LossFunction):
         epsilon = 1e-12
         y_pred = np.clip(y_pred, epsilon, 1. - epsilon)
         return -y_true / y_pred
+    
