@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ncxlib"
-version = "0.2.2"
+version = "0.2.3"
 description = "Neural Network lib for ncxlib"
 authors = [
     "neelthepatel <patel.neel5@northeastern.edu>",
@@ -34,3 +34,4 @@ gen = "scripts:add_init_files"
 clean = "scripts:remove_all_init_files"
 fmt = "scripts:fmt"
 notebook = "scripts:notebook"
+deploy = "scripts:deploy"
