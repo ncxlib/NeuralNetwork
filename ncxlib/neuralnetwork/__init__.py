@@ -22,6 +22,7 @@ NeuralNetwork,
 from .optimizers import (
 Optimizer,
 SGD,
+SGDMomentum,
 )
 from .utils import (
 inspect_saved_model,
