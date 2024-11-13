@@ -1,7 +1,6 @@
 import numpy as np
 from abc import ABC, abstractmethod
 
-
 class LossFunction(ABC):
     
     @abstractmethod

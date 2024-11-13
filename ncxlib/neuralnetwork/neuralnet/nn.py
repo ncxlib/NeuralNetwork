@@ -2,8 +2,11 @@ from typing import Optional
 import numpy as np
 from tqdm.auto import tqdm
 from ncxlib.neuralnetwork.layers import Layer, InputLayer, OutputLayer
-from ncxlib.neuralnetwork.losses import LossFunction, MeanSquaredError
+from ncxlib.neuralnetwork.losses import LossFunction, MeanSquaredError, BinaryCrossEntropy, CategoricalCrossEntropy
+from ncxlib.neuralnetwork.activations import ReLU, Sigmoid, Softmax
 from ncxlib.util import log, timer, show_time, time_this
+from ncxlib.neuralnetwork.layers import FullyConnectedLayer
+import h5py
 
 class NeuralNetwork:
     def __init__(self, layers: Optional[list[Layer]] = [], loss_fn: Optional[LossFunction] = MeanSquaredError):
@@ -110,4 +113,93 @@ class NeuralNetwork:
         predictions = self.predict(inputs, multiple=True)
         accuracy = np.mean(predictions == targets)
         print(f"Accuracy: {accuracy * 100:.2f}%")
+    
+    def save_model(self, filepath):
+        '''
+        Function: 
+            Saves the model as a .h5 file that stores each layers neurons, weights, bias, loss fn and
+            activation function.
 
+            ** Note: Do not add .h5 to the end of your filepath. This will be added automatically.
+        '''
+        h5_suffix = ".h5"
+        final_path = filepath + h5_suffix
+        with h5py.File(final_path, 'w') as f:
+            loss_fn_name = self.loss_fn.__name__ if hasattr(self.loss_fn, '__name__') else self.loss_fn.__class__.__name__
+            f.attrs['loss_function'] = loss_fn_name
+            f.attrs['num_layers'] = len(self.layers)
+
+            for i, layer in enumerate(self.layers):
+                if layer.W is not None and layer.b is not None:
+                    f.create_dataset(f"layer_{i}_weights", data=layer.W)
+                    f.create_dataset(f"layer_{i}_bias", data=layer.b)
+                    f.attrs[f"layer_{i}_activation"] = layer.activation.__class__.__name__
+                else:
+                    print(f"Skipping layer {i} as it has no weights or biases")  
+
+        print(f"Model saved to {final_path}")
+
+    
+    @classmethod
+    def load_model(cls, filepath):
+        
+        # TODO: Get rid of these lookup maps and add a _registry in LossFunction
+        loss_fn_lookup = {
+            "BinaryCrossEntropy": BinaryCrossEntropy,
+            "MeanSquaredError": MeanSquaredError,
+        }
+
+        activation_fn_lookup = {
+            "Sigmoid": Sigmoid,
+            "ReLU": ReLU,
+            "Softmax": Softmax
+        }
+
+        with h5py.File(filepath, 'r') as f:
+            loss_fn_name = f.attrs['loss_function']
+            loss_fn_class = loss_fn_lookup.get(loss_fn_name)
+
+            if loss_fn_class is None:
+                raise ValueError(f"loss fn {loss_fn_name} not found")
+            
+            model = cls(loss_fn=loss_fn_class())
+            num_layers = f.attrs['num_layers']
+
+            for i in range(1, num_layers):
+                activation_fn_name = f.attrs.get(f"layer_{i}_activation")
+                activation_fn_class = activation_fn_lookup.get(activation_fn_name)
+
+                if activation_fn_class is None:
+                    raise ValueError(f"Activation function '{activation_fn_name}' not found in lookup dictionary")
+                
+                weights = f[f"layer_{i}_weights"][:]
+                biases = f[f"layer_{i}_bias"][:]
+                n_neurons, n_inputs = weights.shape
+
+                layer = FullyConnectedLayer(
+                    n_inputs=n_inputs,
+                    n_neurons=n_neurons,
+                    activation=activation_fn_class()
+                )
+                layer.W = weights
+                layer.b = biases
+                model.layers.append(layer)
+            
+            print(f"model loaded from {filepath}")
+            return model
+
+    
+    # verify final wts/bias against saved models wts/bias
+    def print_final_weights_biases(self):
+        print("Final Weights and Biases After Training:")
+        for i, layer in enumerate(self.layers):
+            if layer.W is not None and layer.b is not None:
+                print(f"Layer {i}:")
+                print(f"  Weights:\n{layer.W}")
+                print(f"  Bias:\n{layer.b}")
+            else:
+                print(f"Layer {i} has no weights or biases")
+
+
+
+   

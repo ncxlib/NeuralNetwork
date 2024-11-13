@@ -1,8 +1,11 @@
 [tool.poetry]
 name = "ncxlib"
-version = "0.1.0"
+version = "0.2.3"
 description = "Neural Network lib for ncxlib"
-authors = ["neelthepatel <patel.neel5@northeastern.edu>"]
+authors = [
+    "neelthepatel <patel.neel5@northeastern.edu>",
+    "cwcoogan <coogan.c@northeastern.edu>"
+    ]
 readme = "README.md"
 
 [tool.poetry.dependencies]
@@ -13,6 +16,7 @@ nbformat = "^5.10.4"
 tqdm = "^4.67.0"
 pandas = "^2.2.3"
 pillow = "^11.0.0"
+h5py = "^3.12.1"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -30,3 +34,4 @@ gen = "scripts:add_init_files"
 clean = "scripts:remove_all_init_files"
 fmt = "scripts:fmt"
 notebook = "scripts:notebook"
+deploy = "scripts:deploy"

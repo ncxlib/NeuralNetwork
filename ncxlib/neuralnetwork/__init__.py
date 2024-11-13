@@ -24,5 +24,6 @@ Optimizer,
 SGD,
 )
 from .utils import (
+inspect_saved_model,
 typecheck,
 )
