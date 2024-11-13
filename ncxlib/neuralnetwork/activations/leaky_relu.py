@@ -35,7 +35,6 @@ class LeakyReLU(Activation):
         """
 
         typecheck(x)
-        alpha = .01
         return np.where(x > 0, x, self.alpha * x)
 
     def derivative(self, x: np.ndarray) -> np.ndarray:
@@ -51,4 +50,6 @@ class LeakyReLU(Activation):
         np.ndarray
             Numpy array with the Leaky ReLU derivative applied element-wise.
         """
-        return np.where(x > 0, 1, self.alpha)
+
+        
+        return np.array([xi * self.alpha if xi < 0 else xi for xi in x])
