@@ -3,7 +3,7 @@ import numpy as np
 from tqdm.auto import tqdm
 from ncxlib.neuralnetwork.layers import Layer, InputLayer, OutputLayer
 from ncxlib.neuralnetwork.losses import LossFunction, MeanSquaredError, BinaryCrossEntropy, CategoricalCrossEntropy
-from ncxlib.neuralnetwork.activations import ReLU, Sigmoid, Softmax
+from ncxlib.neuralnetwork.activations import ReLU, Sigmoid, Softmax, LeakyReLU, Tanh
 from ncxlib.util import log, timer, show_time, time_this
 from ncxlib.neuralnetwork.layers import FullyConnectedLayer
 import h5py
@@ -152,7 +152,9 @@ class NeuralNetwork:
         activation_fn_lookup = {
             "Sigmoid": Sigmoid,
             "ReLU": ReLU,
-            "Softmax": Softmax
+            "Softmax": Softmax,
+            "tanh": Tanh,
+            "LeakyReLU": LeakyReLU, 
         }
 
         with h5py.File(filepath, 'r') as f:

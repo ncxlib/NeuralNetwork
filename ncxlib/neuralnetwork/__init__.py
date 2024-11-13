@@ -1,8 +1,10 @@
 from .activations import (
 Activation,
+LeakyReLU,
 ReLU,
 Sigmoid,
 Softmax,
+Tanh,
 )
 from .layers import (
 FullyConnectedLayer,
