@@ -21,8 +21,8 @@ class OutputLayer(Layer):
 
         activated = np.clip(self.layer.activated, 1e-7, 1 - 1e-7)
 
-        dl_da = (activated - y_true) / (activated * (1 - activated)) 
-
+        dl_da = self.layer.loss_fn.compute_gradient(y_true, activated)
+        
         da_dz = self.layer.activation.derivative(self.layer.z)
 
         dl_dz = dl_da * da_dz 
