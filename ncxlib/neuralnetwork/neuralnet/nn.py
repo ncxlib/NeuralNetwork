@@ -37,7 +37,6 @@ class NeuralNetwork:
 
             previous_outputs = layer.n_neurons
 
-            layer.optimizer = layer.optimizer(learning_rate)
             layer.activation = layer.activation()
 
         self.output_layer = OutputLayer(self.layers[-1], loss_fn = self.loss_fn)

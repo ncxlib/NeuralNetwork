@@ -4,3 +4,6 @@ Optimizer,
 from .sgd import (
 SGD,
 )
+from .sgdmomentum import (
+SGDMomentum,
+)
