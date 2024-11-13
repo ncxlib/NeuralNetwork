@@ -26,7 +26,7 @@ class Layer(ABC):
         self.activation = activation
         self.optimizer = optimizer
         self.neurons = None
-        self.loss_fn = loss_fn()
+        self.loss_fn = loss_fn
         self.name = name
 
 
