@@ -36,7 +36,7 @@ from ncxlib.neuralnetwork.initializers import HeNormal, Zero
 
 
 # ------- Generate some data using generators -------
-gemerators.generate_training_data(to_csv=True)
+generators.generate_training_data(to_csv=True)
 
 # ------- Load data from generated csv and split it into train and test -------
 loader = dataloaders.CSVDataLoader("training_data.csv")
@@ -57,7 +57,7 @@ model = NeuralNetwork([
 
     FullyConnectedLayer(
         n_neurons=5, 
-        activation=ReLU, 
+        activation=activations.ReLU, 
         optimizer=optimizers.SGDMomentum(momentum = 0.9), 
         name="second_hidden",
         initializer=HeNormal(),
@@ -65,7 +65,7 @@ model = NeuralNetwork([
 
     FullyConnectedLayer(
         n_neurons=2, 
-        activation=Sigmoid, 
+        activation=activations.Sigmoid, 
         optimizer=optimizers.RMSProp(decay_rate = 0.8)
         )
 ],
