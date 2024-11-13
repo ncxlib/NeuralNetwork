@@ -6,6 +6,11 @@ Sigmoid,
 Softmax,
 Tanh,
 )
+from .initializers import (
+HeNormal,
+Initializer,
+Zero,
+)
 from .layers import (
 FullyConnectedLayer,
 InputLayer,

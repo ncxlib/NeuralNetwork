@@ -4,16 +4,20 @@ import numpy as np
 from ncxlib.neuralnetwork.optimizers import SGD, Optimizer
 from ncxlib.neuralnetwork.activations import ReLU, Activation
 from ncxlib.neuralnetwork.losses import MeanSquaredError, LossFunction
+from ncxlib.neuralnetwork.initializers import Initializer, HeNormal, Zero
 
 
 class Layer(ABC):
     def __init__(
         self,
-        n_inputs: Optional[int] = None,
         n_neurons: Optional[int] = None,
+        n_inputs: Optional[int] = None,
         activation: Optional[Activation] = ReLU,
         optimizer: Optional[Optimizer] = SGD,
         loss_fn: Optional[LossFunction] = MeanSquaredError,
+        initializer: Optional[Initializer] = HeNormal(),
+        weights_initializer: Optional[Initializer] = HeNormal(),
+        bias_initializer: Optional[Initializer] = Zero(),
         name: str = ""
     ):
         if not Callable:
@@ -26,9 +30,11 @@ class Layer(ABC):
         self.activation = activation
         self.optimizer = optimizer
         self.neurons = None
-        self.loss_fn = loss_fn()
+        self.loss_fn = loss_fn
         self.name = name
 
+        self.weights_initializer = weights_initializer if weights_initializer else initializer
+        self.bias_initializer = bias_initializer if bias_initializer else initializer
 
         # inputs remain same for all so just store in n_inputs x 1
         self.inputs = None
@@ -48,15 +54,13 @@ class Layer(ABC):
         self.activated = None
 
     def initialize_params(self, inputs: np.ndarray):
-
         # inputs always get updated
         self.inputs = inputs.reshape((self.n_inputs, 1))
 
         # only initialize if not initialized yet, if not use previously learned values
         if self.W is None or self.b is None:
-            # self.W = np.zeros((self.n_neurons, self.n_inputs))
-            self.W = np.random.randn(self.n_neurons, self.n_inputs) * np.sqrt(2 / self.n_inputs) 
-            self.b = np.zeros((self.n_neurons, 1))
+            self.W = self.weights_initializer.gen_W(self.n_inputs, self.n_neurons)
+            self.b = self.bias_initializer.gen_b(self.n_neurons)
 
     @abstractmethod
     def forward_propagation(self, inputs: np.ndarray, no_save: Optional[bool] = False) -> np.ndarray:

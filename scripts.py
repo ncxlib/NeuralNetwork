@@ -55,6 +55,7 @@ def add_init_files():
 
     move_layer_import_to_top("ncxlib/neuralnetwork/layers/__init__.py", "Layer")
     move_layer_import_to_top("ncxlib/neuralnetwork/losses/__init__.py", "LossFunction")
+    move_layer_import_to_top("ncxlib/neuralnetwork/initializers/__init__.py", "Initializer")
 
 
 def fmt():

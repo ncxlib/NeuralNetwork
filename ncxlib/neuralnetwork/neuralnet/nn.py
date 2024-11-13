@@ -23,7 +23,7 @@ class NeuralNetwork:
             raise ValueError("Labels should be of integer type, if they are categorical, please use OneHotEncoder Preprocessor")
             
 
-        self.layers = [InputLayer(1, inputs.shape[1])] + self.layers
+        self.layers = [InputLayer(n_neurons=inputs.shape[1], n_inputs=1)] + self.layers
 
         previous_outputs = self.layers[0].n_neurons
         for layer in self.layers[1:]:
@@ -31,6 +31,7 @@ class NeuralNetwork:
                 raise ValueError(
                     "The inputs for a layer should match the number of neuron outputs of the previous layer."
                 )
+                
 
             if not layer.n_inputs:
                 layer.n_inputs = previous_outputs
@@ -39,7 +40,8 @@ class NeuralNetwork:
 
             layer.activation = layer.activation()
 
-        self.output_layer = OutputLayer(self.layers[-1], loss_fn = self.loss_fn)
+        
+        self.output_layer = OutputLayer(layer=self.layers[-1], loss_fn = self.loss_fn)
 
     def add_layer(self, layer):
         self.layers.append(layer)

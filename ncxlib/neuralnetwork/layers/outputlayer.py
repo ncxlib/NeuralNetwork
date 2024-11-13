@@ -5,7 +5,7 @@ from ncxlib.util import log
 
 class OutputLayer(Layer):
     def __init__(
-        self,  layer: Layer, loss_fn, n_inputs=None, n_neurons=None, activation=..., optimizer=...
+        self,  layer: Layer, loss_fn, n_neurons=None,  n_inputs=None, activation=..., optimizer=...
     ):
         if layer:
             self.layer = layer
@@ -21,8 +21,8 @@ class OutputLayer(Layer):
 
         activated = np.clip(self.layer.activated, 1e-7, 1 - 1e-7)
 
-        dl_da = (activated - y_true) / (activated * (1 - activated)) 
-
+        dl_da = self.layer.loss_fn.compute_gradient(y_true, activated)
+        
         da_dz = self.layer.activation.derivative(self.layer.z)
 
         dl_dz = dl_da * da_dz 
