@@ -1,6 +1,8 @@
 from ncxlib.neuralnetwork.layers import Layer
 import numpy as np
 from ncxlib.util import log
+from ncxlib.neuralnetwork.losses import BinaryCrossEntropy
+from ncxlib.neuralnetwork.activations import LeakyReLU, Sigmoid
 
 
 class OutputLayer(Layer):
@@ -13,6 +15,10 @@ class OutputLayer(Layer):
             super().__init__(
                 layer.n_inputs, layer.n_neurons, layer.activation, layer.optimizer, loss_fn=loss_fn
             )
+        if loss_fn == BinaryCrossEntropy and isinstance(self.layer.activation, LeakyReLU):
+            print("Changing LeakyReLU to Sigmoid function for output layer for BCE.")
+            self.layer.activation = Sigmoid()
+            self.activation = Sigmoid()
 
     def forward_propagation(self, inputs, no_save):
         return self.layer.forward_propagation(inputs, no_save)
@@ -22,6 +28,7 @@ class OutputLayer(Layer):
         activated = np.clip(self.layer.activated, 1e-7, 1 - 1e-7)
 
         dl_da = self.layer.loss_fn.compute_gradient(y_true, activated)
+        
         
         da_dz = self.layer.activation.derivative(self.layer.z)
 

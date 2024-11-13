@@ -38,10 +38,13 @@ class NeuralNetwork:
 
             previous_outputs = layer.n_neurons
 
+         
+
             layer.activation = layer.activation()
 
-        
         self.output_layer = OutputLayer(layer=self.layers[-1], loss_fn = self.loss_fn)
+        self.layers[-1].activation = self.output_layer.activation
+
 
     def add_layer(self, layer):
         self.layers.append(layer)
