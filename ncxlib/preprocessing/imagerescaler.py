@@ -6,27 +6,35 @@ import pandas as pd
 
 
 class ImageRescaler(Preprocessor):
-    def __init__(self, target_size=(32, 32), original_size=(512, 512)):
+    def __init__(self, target_size=(32, 32), original_size=(512, 512), flatten=False):
         super().__init__()
         self.target_size = target_size
         self.original_size = original_size
+        self.flatten = flatten
 
     def resize_image(self, image: np.ndarray) -> np.ndarray:
-        expected_length = self.original_size[0] * self.original_size[1] * 3
-        if image.size == expected_length:
+        # Check if the image needs to be reshaped from 1D to 3D for RGB images
+        if image.ndim == 1:
             image = image.reshape((self.original_size[0], self.original_size[1], 3))
 
+        # Convert to PIL Image, resize, and convert back to numpy
         pil_image = Image.fromarray(image.astype(np.uint8))
         resized_image = pil_image.resize(self.target_size)
+        resized_array = np.array(resized_image)
 
-        resized_array = np.array(resized_image).reshape(-1, 3)
+        # Flatten if specified
+        if self.flatten:
+            if resized_array.ndim == 3:  # RGB image
+                resized_array = resized_array.reshape(-1)
+            elif resized_array.ndim == 2:  # Grayscale image
+                resized_array = resized_array.flatten()
+
         return resized_array
 
     def resize_all_images(self, dataset: Dataset) -> pd.DataFrame:
         resized_imgs = []
 
-        data = dataset.data.copy()
-        for _, row in data.iterrows():
+        for _, row in dataset.data.iterrows():
             rgb_pixels = row["data"]
             resized_image = self.resize_image(rgb_pixels)
             resized_imgs.append(
@@ -41,5 +49,6 @@ class ImageRescaler(Preprocessor):
         return dataframe
 
     def apply(self, dataset: Dataset) -> Dataset:
-        dataset.data = self.resize_all_images(dataset)
+        resized_data = self.resize_all_images(dataset)
+        dataset.data = resized_data
         return dataset
