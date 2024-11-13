@@ -3,14 +3,14 @@ from ncxlib.neuralnetwork.utils.check import typecheck
 import numpy as np
 
 
-class ReLU(Activation):
+class Tanh(Activation):
     def __init__(self):
         super().__init__()
 
     def apply(self, x: np.ndarray) -> np.ndarray:
         """
-        ReLU activation function.
-            f(x) = max(0, x)
+        Tanh activation function.
+            f(x) = (e^x - e^(-x)) / (e^x + e^(-x))
 
         Parameters:
         x : np.ndarray
@@ -18,7 +18,7 @@ class ReLU(Activation):
 
         Returns:
         np.ndarray
-            Numpy array with the ReLU function applied element-wise.
+            Numpy array with the tanh function applied element-wise.
 
         Raises:
             TypeError:
@@ -26,15 +26,14 @@ class ReLU(Activation):
             ValueError:
                 If input contains NaN or infinity values.
         """
-
-        # typecheck(x)
-        a = x / 20
-        return np.maximum(a * x, 0)
+        typecheck(x)
+        self.activated = np.tanh(x)
+        return self.activated
 
     def derivative(self, x: np.ndarray) -> np.ndarray:
         """
-        Sigmoid Derivative function.
-            f'(x) = f(x) * (1 - f(x))
+        Tanh derivative function.
+            f'(x) = 1 - f(x)^2
 
         Parameters:
         x : np.ndarray
@@ -42,7 +41,7 @@ class ReLU(Activation):
 
         Returns:
         np.ndarray
-            Numpy array with the sigmoid derivative applied element-wise.
+            Numpy array with the tanh derivative applied element-wise.
         """
-
-        return np.where(x > 0, 1, 0)
+        self.activated = self.apply(x)
+        return 1 - self.activated ** 2

@@ -2,15 +2,22 @@ from ncxlib.neuralnetwork.activations.activation import Activation
 from ncxlib.neuralnetwork.utils.check import typecheck
 import numpy as np
 
+class LeakyReLU(Activation):
+    def __init__(self, alpha: float = 0.01):
+        """
+        Initialize the LeakyReLU activation with a specified alpha value.
 
-class ReLU(Activation):
-    def __init__(self):
+        Parameters:
+        alpha : float
+            The slope for x < 0. Default is 0.01.
+        """
         super().__init__()
+        self.alpha = alpha
 
     def apply(self, x: np.ndarray) -> np.ndarray:
         """
-        ReLU activation function.
-            f(x) = max(0, x)
+        Leaky ReLU activation function.
+            f(x) = x if x > 0 else alpha * x
 
         Parameters:
         x : np.ndarray
@@ -18,7 +25,7 @@ class ReLU(Activation):
 
         Returns:
         np.ndarray
-            Numpy array with the ReLU function applied element-wise.
+            Numpy array with the Leaky ReLU function applied element-wise.
 
         Raises:
             TypeError:
@@ -27,14 +34,14 @@ class ReLU(Activation):
                 If input contains NaN or infinity values.
         """
 
-        # typecheck(x)
-        a = x / 20
-        return np.maximum(a * x, 0)
+        typecheck(x)
+        alpha = .01
+        return np.where(x > 0, x, self.alpha * x)
 
     def derivative(self, x: np.ndarray) -> np.ndarray:
         """
-        Sigmoid Derivative function.
-            f'(x) = f(x) * (1 - f(x))
+        Leaky ReLU Derivative function.
+            f'(x) = 1 if x > 0 else alpha
 
         Parameters:
         x : np.ndarray
@@ -42,7 +49,6 @@ class ReLU(Activation):
 
         Returns:
         np.ndarray
-            Numpy array with the sigmoid derivative applied element-wise.
+            Numpy array with the Leaky ReLU derivative applied element-wise.
         """
-
-        return np.where(x > 0, 1, 0)
+        return np.where(x > 0, 1, self.alpha)

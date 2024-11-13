@@ -1,6 +1,9 @@
 from .activation import (
 Activation,
 )
+from .leaky_relu import (
+LeakyReLU,
+)
 from .relu import (
 ReLU,
 )
@@ -9,4 +12,7 @@ Sigmoid,
 )
 from .softmax import (
 Softmax,
+)
+from .tanh import (
+Tanh,
 )
