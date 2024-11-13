@@ -21,6 +21,7 @@ class ImageDataset(Dataset):
                     path = os.path.join(label_path, image_name)
                     image = Image.open(path).convert("RGB")
                     pixels = self.get_all_pixels(image)
+                    pixels = np.array(image).reshape(-1, 3)
                     target = int(label) if self.label_numeric else label
                     data.append({"title": str(image_name), "data": np.array(pixels), "target": target})
 
@@ -30,10 +31,4 @@ class ImageDataset(Dataset):
             self.data["target"] = self.data["target"].astype("string")
 
     def get_all_pixels(self, image: Image) -> np.ndarray:
-        pixels = []
-        for x in range(image.width):
-            for y in range(image.height):
-                r, g, b = image.getpixel((x, y))
-                pixels.append([r, g, b])
-
-        return np.array(pixels)
+        return np.array(image)

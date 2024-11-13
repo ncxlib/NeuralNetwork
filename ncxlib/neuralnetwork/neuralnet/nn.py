@@ -100,11 +100,14 @@ class NeuralNetwork:
             loss = total_loss / len(inputs)
         
 
-    def predict(self, inputs):
-        return [np.argmax(self.forward_propagate_all_no_save(input)) for input in inputs]
+    def predict(self, inputs: np.ndarray, multiple=False):
+        if multiple:
+            return [np.argmax(self.forward_propagate_all_no_save(input)) for input in inputs]
+
+        return np.argmax(self.forward_propagate_all(inputs))
 
     def evaluate(self, inputs, targets):
-        predictions = self.predict(inputs)
+        predictions = self.predict(inputs, multiple=True)
         accuracy = np.mean(predictions == targets)
         print(f"Accuracy: {accuracy * 100:.2f}%")
 
