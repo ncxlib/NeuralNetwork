@@ -7,18 +7,22 @@ from ncxlib.neuralnetwork.optimizers.sgd import SGD
 from ncxlib.neuralnetwork.activations.activation import Activation
 from ncxlib.neuralnetwork.activations.relu import ReLU
 from ncxlib.neuralnetwork.losses import LossFunction, MeanSquaredError
+from ncxlib.neuralnetwork.initializers import Initializer, HeNormal, Zero
 
 class FullyConnectedLayer(Layer):
     def __init__(
         self,
-        n_inputs: Optional[int] = None,
         n_neurons: Optional[int] = None,
+        n_inputs: Optional[int] = None,
         activation: Optional[Activation] = ReLU,
         optimizer: Optional[Optimizer] = SGD,
         loss_fn: Optional[LossFunction] = MeanSquaredError,
+        initializer: Optional[Initializer] = HeNormal(),
+        weights_initializer: Optional[Initializer] = HeNormal(),
+        bias_initializer: Optional[Initializer] = Zero(),
         name: Optional[str] = ""
     ):
-        super().__init__(n_inputs, n_neurons, activation, optimizer, loss_fn, name=name)
+        super().__init__(n_neurons, n_inputs, activation, optimizer, loss_fn, name=name)
 
     def forward_propagation(self, inputs: np.ndarray, no_save: Optional[bool] = False) -> tuple[np.ndarray, int]:
         """
