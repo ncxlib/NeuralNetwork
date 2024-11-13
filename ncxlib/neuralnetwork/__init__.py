@@ -21,6 +21,7 @@ NeuralNetwork,
 )
 from .optimizers import (
 Optimizer,
+RMSProp,
 SGD,
 SGDMomentum,
 )
