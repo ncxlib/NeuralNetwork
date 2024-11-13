@@ -61,7 +61,8 @@ class FullyConnectedLayer(Layer):
         dz_dw = self.inputs.T  
         dl_dw = dl_dz @ dz_dw
 
-        self.W -= learning_rate * dl_dw
-        self.b -= learning_rate * dl_dz
+        dl_db = dl_dz
 
         self.gradients = dl_dz
+
+        self.W, self.b = self.optimizer.apply(self.W, dl_dw, self.b, dl_db)

@@ -14,7 +14,7 @@ class NeuralNetwork:
         self.compiled = False
         self.loss_fn = loss_fn
 
-    def _compile(self, inputs: np.ndarray, targets: np.ndarray) -> None:
+    def _compile(self, inputs: np.ndarray, targets: np.ndarray, learning_rate: float) -> None:
         self.compiled = True
 
         try:
@@ -36,6 +36,9 @@ class NeuralNetwork:
                 layer.n_inputs = previous_outputs
 
             previous_outputs = layer.n_neurons
+
+            layer.optimizer = layer.optimizer(learning_rate)
+            layer.activation = layer.activation()
 
         self.output_layer = OutputLayer(self.layers[-1], loss_fn = self.loss_fn)
 
@@ -73,7 +76,7 @@ class NeuralNetwork:
     ):
 
         if not self.compiled:
-            self._compile(inputs, targets)
+            self._compile(inputs, targets, learning_rate)
 
         progress = tqdm(range(epochs))
         loss = np.inf

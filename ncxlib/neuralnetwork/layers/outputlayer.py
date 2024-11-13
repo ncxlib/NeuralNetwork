@@ -30,8 +30,7 @@ class OutputLayer(Layer):
         self.layer.gradients = dl_dz
         self.layer.old_W = self.layer.W.copy()
 
-        dw = dl_dz @ self.layer.inputs.T 
-        self.layer.W -= learning_rate * dw
+        dl_dw = dl_dz @ self.layer.inputs.T 
+        dl_db = np.sum(dl_dz, axis=1, keepdims=True)
 
-        db = np.sum(dl_dz, axis=1, keepdims=True)
-        self.layer.b -= learning_rate * db
+        self.layer.W, self.layer.b = self.layer.optimizer.apply(self.layer.W, dl_dw, self.layer.b, dl_db)
