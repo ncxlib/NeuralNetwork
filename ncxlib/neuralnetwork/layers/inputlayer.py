@@ -2,10 +2,10 @@ from ncxlib.neuralnetwork.layers import Layer
 
 class InputLayer(Layer):
     def __init__(
-        self, n_inputs=None, n_neurons=None, activation=..., optimizer=...
+        self, n_neurons=None, n_inputs=None,  activation=..., optimizer=...
     ):
         super().__init__(
-            n_inputs, n_neurons, name="input"
+            n_neurons, n_inputs, name="input"
         )
     
     def initialize_params(self, inputs):

@@ -5,7 +5,7 @@ from ncxlib.util import log
 
 class OutputLayer(Layer):
     def __init__(
-        self,  layer: Layer, loss_fn, n_inputs=None, n_neurons=None, activation=..., optimizer=...
+        self,  layer: Layer, loss_fn, n_neurons=None,  n_inputs=None, activation=..., optimizer=...
     ):
         if layer:
             self.layer = layer
