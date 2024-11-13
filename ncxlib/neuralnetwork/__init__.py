@@ -20,6 +20,7 @@ from .neuralnet import (
 NeuralNetwork,
 )
 from .optimizers import (
+Adam,
 Optimizer,
 RMSProp,
 SGD,
