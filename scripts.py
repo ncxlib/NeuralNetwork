@@ -1,8 +1,7 @@
 import subprocess
 import os
 import nbformat as nbf
-import re
-
+import toml
 
 def add_init_files():
     """
@@ -209,3 +208,43 @@ def move_layer_import_to_top(init_path, module_name):
             f.writelines(layer_import + data)
 
         print(f"Moved .{module_name.lower()} imports to the top in {init_path}")
+
+
+def increment_pypi_version(version):
+    major, minor, patch = map(int, version.split('.'))
+    if patch < 9:
+        patch += 1
+    else:
+        patch = 0
+        if minor < 9:
+            minor += 1
+        else:
+            minor = 0
+            major += 1
+    return f"{major}.{minor}.{patch}"
+
+
+def update_version_in_pyproject():
+    with open("pyproject.toml", "r") as f:
+        pyproject = toml.load(f)
+
+    current_version = pyproject["tool"]["poetry"]["version"]
+    new_version = increment_pypi_version(current_version)
+    pyproject["tool"]["poetry"]["version"] = new_version
+
+    with open("pyproject.toml", "w") as file:
+        toml.dump(pyproject, file)
+    print(f"Version updated from {current_version} to {new_version}")
+
+def remove_poetry_lock():
+    if os.path.exists("poetry.lock"):
+        os.remove("poetry.lock")
+        print("poetry.lock file removed.")
+
+def run_poetry_commands():
+    remove_poetry_lock()
+    update_version_in_pyproject()
+
+    subprocess.run(["poetry", "install"], check=True)
+    subprocess.run(["poetry", "run", "gen"], check=True)
+    subprocess.run(["poetry", "publish", "--build"], check=True)

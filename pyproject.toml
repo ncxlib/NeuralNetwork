@@ -1,11 +1,12 @@
+[build-system]
+requires = [ "poetry-core",]
+build-backend = "poetry.core.masonry.api"
+
 [tool.poetry]
 name = "ncxlib"
-version = "0.2.4"
+version = "0.2.5"
 description = "Neural Network lib for ncxlib"
-authors = [
-    "neelthepatel <patel.neel5@northeastern.edu>",
-    "cwcoogan <coogan.c@northeastern.edu>"
-    ]
+authors = [ "neelthepatel <patel.neel5@northeastern.edu>", "cwcoogan <coogan.c@northeastern.edu>",]
 readme = "README.md"
 
 [tool.poetry.dependencies]
@@ -17,21 +18,17 @@ tqdm = "^4.67.0"
 pandas = "^2.2.3"
 pillow = "^11.0.0"
 h5py = "^3.12.1"
-
-
-[tool.poetry.group.dev.dependencies]
-black = "^24.10.0"
-jupyterlab = "^4.3.0"
-tensorflow = "^2.18.0"
-matplotlib = "^3.9.2"
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+toml = "^0.10.2"
 
 [tool.poetry.scripts]
 gen = "scripts:add_init_files"
 clean = "scripts:remove_all_init_files"
 fmt = "scripts:fmt"
 notebook = "scripts:notebook"
-deploy = "scripts:deploy"
+deploy = "scripts:run_poetry_commands"
+
+[tool.poetry.group.dev.dependencies]
+black = "^24.10.0"
+jupyterlab = "^4.3.0"
+tensorflow = "^2.18.0"
+matplotlib = "^3.9.2"
