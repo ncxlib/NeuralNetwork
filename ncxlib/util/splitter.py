@@ -60,7 +60,13 @@ def k_fold_cross_validation(X, y, k=5, random_seed=None):
 
     for i in range(k):
         test_indices = folds_indices[i]
-        train_indices = np.concatenate([fold for j, fold in enumerate(folds_indices) if j != i])
+        
+        train_indices = []
+        for j in range(k):
+            if j != i:
+                train_indices.append(folds_indices[j])
+
+        train_indices = np.concatenate(train_indices)
 
         X_train, X_test = X[train_indices], X[test_indices]
         y_train, y_test = y[train_indices], y[test_indices]
