@@ -36,8 +36,6 @@ class FullyConnectedLayer(Layer):
             Performs forward propagation by calculating the weighted sum for each neuron
         and applying the activation function
         """
-
-        
        
         self.initialize_params(inputs)
 
