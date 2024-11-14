@@ -6,10 +6,11 @@ from ncxlib.neuralnetwork.losses import LossFunction, MeanSquaredError, BinaryCr
 from ncxlib.neuralnetwork.activations import ReLU, Sigmoid, Softmax, LeakyReLU, Tanh
 from ncxlib.util import log, timer, show_time, time_this
 from ncxlib.neuralnetwork.layers import FullyConnectedLayer
-import h5py
+import h5py, uuid
 
 class NeuralNetwork:
     def __init__(self, layers: Optional[list[Layer]] = [], loss_fn: Optional[LossFunction] = MeanSquaredError):
+        
         self.layers = layers
         self.compiled = False
         self.loss_fn = loss_fn
@@ -130,8 +131,9 @@ class NeuralNetwork:
 
             ** Note: Do not add .h5 to the end of your filepath. This will be added automatically.
         '''
-        h5_suffix = ".h5"
-        final_path = filepath + h5_suffix
+        filename = str(uuid.uuid4().hex) + ".h5"
+        final_path = filepath + "/" + filename
+
         with h5py.File(final_path, 'w') as f:
             loss_fn_name = self.loss_fn.__name__ if hasattr(self.loss_fn, '__name__') else self.loss_fn.__class__.__name__
             f.attrs['loss_function'] = loss_fn_name
