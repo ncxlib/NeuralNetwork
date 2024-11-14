@@ -36,13 +36,14 @@ def train_test_split(X, y, test_size=0.2, random_state=None):
 
 def k_fold_cross_validation(X, y, k=5, random_seed=None):
     '''
-    Performs a K-Fold Cross Validation on the given dataset.
+    Performs a K-Fold Cross Validation on the given dataset. 
+    Used for evaluating a model's performance on different subsets of the data.
     
     Args:
-        X (np.ndarray): Feature matrix.
-        y (np.ndarray): Target variable array.
-        k (int): Number of folds for cross-validation.
-        random_seed (int): Optional random seed for reproducibility.
+        X (np.ndarray): inputs .
+        y (np.ndarray): Target labels.
+        k (int): Number of folds.
+        random_seed (int): Optional random seed.
 
     Returns:
         scores (list): List of scores for each fold.
@@ -51,23 +52,21 @@ def k_fold_cross_validation(X, y, k=5, random_seed=None):
     if random_seed is not None:
         np.random.seed(random_seed)
 
-    num_samples = len(X)
-    indices = np.random.permutation(num_samples)
-    fold_size = num_samples // k
+    indices = np.random.permutation(len(X))
+    folds_indices = np.array_split(indices, k)
 
     scores = []
     folds = []
 
     for i in range(k):
-        test_indices = indices[i * fold_size: (i + 1) * fold_size ]
-        train_indices = np.concatenate([indices[:i * fold_size], indices[(i + 1) * fold_size:]])
+        test_indices = folds_indices[i]
+        train_indices = np.concatenate([fold for j, fold in enumerate(folds_indices) if j != i])
 
         X_train, X_test = X[train_indices], X[test_indices]
         y_train, y_test = y[train_indices], y[test_indices]
 
         folds.append((X_train, y_train, X_test, y_test))
         score = np.mean(y_test == y_train[:len(y_test)])  
-
         scores.append(score)
     
     return scores, folds
