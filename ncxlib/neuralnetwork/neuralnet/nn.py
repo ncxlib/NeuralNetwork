@@ -120,6 +120,7 @@ class NeuralNetwork:
         predictions = self.predict(inputs, multiple=True)
         accuracy = np.mean(predictions == targets)
         print(f"Accuracy: {accuracy * 100:.2f}%")
+        return accuracy
     
     def save_model(self, filepath):
         '''
