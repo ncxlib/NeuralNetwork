@@ -1,6 +1,6 @@
 from typing import Optional
 import numpy as np
-from tqdm.auto import tqdm
+from tqdm import tqdm
 from ncxlib.neuralnetwork.layers import Layer, InputLayer, OutputLayer
 from ncxlib.neuralnetwork.losses import LossFunction, MeanSquaredError, BinaryCrossEntropy, CategoricalCrossEntropy
 from ncxlib.neuralnetwork.activations import ReLU, Sigmoid, Softmax, LeakyReLU, Tanh
@@ -50,10 +50,10 @@ class NeuralNetwork:
     def add_layer(self, layer):
         self.layers.append(layer)
 
-    def forward_propagate_all(self, input_vector):
+    def forward_propagate_all(self, inputs_vector):
         for layer in self.layers[1:]:
-            input_vector = layer.forward_propagation(input_vector)
-        return input_vector
+            inputs_vector = layer.forward_propagation(inputs_vector)
+        return inputs_vector
     
     def forward_propagate_all_no_save(self, input_vector):
         for layer in self.layers[1:]:
@@ -75,12 +75,11 @@ class NeuralNetwork:
         self,
         inputs: np.ndarray,
         targets: np.ndarray,
-        epochs = 10,
+        epochs=10,
         learning_rate=0.001,
-        batch_size = 32,
+        batch_size=32,
         shuffle=True,
     ):
-
         if not self.compiled:
             self._compile(inputs, targets, learning_rate)
 
@@ -98,23 +97,22 @@ class NeuralNetwork:
                 inputs = inputs[indices]
                 targets = targets[indices]
 
-            
-            for i in range(len(inputs)):
+            for i in range(0, len(inputs), batch_size):
 
-                input_vector = inputs[i]
-                class_label = int(targets[i])
-                
-                y_true = np.zeros((self.layers[-1].n_neurons, 1))
-                y_true[class_label] = 1
+                X_batch = inputs[i:i + batch_size]
+                y_batch = targets[i:i + batch_size]
 
-                output_activations = self.forward_propagate_all(input_vector)
+                y_true = np.zeros((len(y_batch), self.layers[-1].n_neurons))
+                for j, class_label in enumerate(y_batch):
+                    y_true[j, int(class_label)] = 1
 
-                # output_activations = np.clip(output_activations, 1e-7, 1 - 1e-7) 
-                sample_loss = self.loss_fn().compute_loss(y_true, output_activations)
-                total_loss += sample_loss
+                output_activations = self.forward_propagate_all(X_batch)
+                batch_loss = self.loss_fn().compute_loss(y_true, output_activations)
+                total_loss += batch_loss
 
                 self.back_propagation(y_true, learning_rate)
 
+            # Compute average loss for the epoch
             loss = total_loss / len(inputs)
         
 

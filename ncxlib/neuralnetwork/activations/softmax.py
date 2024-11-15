@@ -6,6 +6,9 @@ class Softmax(Activation):
         """
         Applies the Softmax function to the input array.
 
+        exp_x = exp(x - max(x))
+        f(x) = exp_x / sum(exp_x)
+
         Args:
           x (np.ndarray): Input array.
 
@@ -14,18 +17,17 @@ class Softmax(Activation):
         """
         e_x = np.exp(x - np.max(x, axis=-1, keepdims=True))
         self.activated = e_x / np.sum(e_x, axis=-1, keepdims=True)
+        
         return self.activated
 
     def derivative(self, x: np.ndarray) -> np.ndarray:
         """
         Calculates the derivative of the Softmax function.
-
-        Args:
-          x (np.ndarray): Input array (not used directly, 
-                          but kept for consistency with other activations).
-
+        
         Returns:
-          np.ndarray: Derivative of Softmax (Jacobian matrix).
+          np.ndarray: The Jacobian matrix for the Softmax derivative.
+          
         """
-        s = self.activated.reshape(-1, 1)
-        return np.diagflat(s) - np.dot(s, s.T)
+        if self.activated is None:
+            self.activated = self.apply(x)
+        return self.activated * (1 - self.activated)

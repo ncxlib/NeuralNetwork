@@ -27,17 +27,23 @@ class OutputLayer(Layer):
 
         activated = np.clip(self.layer.activated, 1e-7, 1 - 1e-7)
 
+        # size: batch_size x n_neurons
         dl_da = self.layer.loss_fn.compute_gradient(y_true, activated)
         
-        
+        # size: batch_size x n_neurons
         da_dz = self.layer.activation.derivative(self.layer.z)
 
-        dl_dz = dl_da * da_dz 
+        dl_dz = dl_da * da_dz
 
         self.layer.gradients = dl_dz
-        self.layer.old_W = self.layer.W.copy()
 
-        dl_dw = dl_dz @ self.layer.inputs.T 
-        dl_db = np.sum(dl_dz, axis=1, keepdims=True)
+        self.layer.old_W = self.layer.W.copy()
+        
+        # averaging the weights to reduce memory overhead. now size n_neurons x n_inputs
+        dl_dw = dl_dz.T @ self.layer.inputs
+        dl_dw /= dl_dz.shape[0]
+        
+        dl_db = np.sum(dl_dz, axis=0, keepdims=True)
+        dl_db = dl_db.T
 
         self.layer.W, self.layer.b = self.layer.optimizer.apply(self.layer.W, dl_dw, self.layer.b, dl_db)

@@ -28,8 +28,7 @@ class ReLU(Activation):
         """
 
         # typecheck(x)
-        a = x / 20
-        return np.maximum(a * x, 0)
+        return np.maximum(x, 0)
 
     def derivative(self, x: np.ndarray) -> np.ndarray:
         """
