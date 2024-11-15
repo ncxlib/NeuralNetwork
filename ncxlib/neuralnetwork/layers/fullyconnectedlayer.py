@@ -15,7 +15,7 @@ class FullyConnectedLayer(Layer):
         n_neurons: Optional[int] = None,
         n_inputs: Optional[int] = None,
         activation: Optional[Activation] = ReLU,
-        optimizer: Optional[Optimizer] = SGD,
+        optimizer: Optional[Optimizer] = SGD(),
         loss_fn: Optional[LossFunction] = MeanSquaredError,
         initializer: Optional[Initializer] = HeNormal(),
         weights_initializer: Optional[Initializer] = HeNormal(),
@@ -39,8 +39,8 @@ class FullyConnectedLayer(Layer):
        
         self.initialize_params(inputs)
 
-        # calculate weighted sum: Wx + b
-        weighted_sum = np.dot(self.W, self.inputs) + self.b
+        # calculate weighted sum: X W' + b (broadcast b automatic with numpy)
+        weighted_sum = np.dot(self.inputs, self.W.T) + self.b.T
 
         # activate each neuron with self.activation function
         activated =  self.activation.apply(weighted_sum)
@@ -56,14 +56,23 @@ class FullyConnectedLayer(Layer):
 
         da_dz = self.activation.derivative(self.z) 
 
-        dl_dz = (next_layer.old_W.T @ next_layer.gradients) * da_dz 
+        dl_da = next_layer.gradients @ next_layer.old_W
+
+        # size: batch_size x n_neurons
+        dl_dz = dl_da * da_dz
 
         self.old_W = self.W.copy()
 
-        dz_dw = self.inputs.T  
-        dl_dw = dl_dz @ dz_dw
+        # size batch_size x n_inputs
+        dz_dw = self.inputs
 
-        dl_db = dl_dz
+        # size multiply  n_neurons x batch_size times batch_size x n_inputs = n_neurons x n_inputs
+        dl_dw = dl_dz.T @ dz_dw
+
+        dl_db = np.sum(dl_dz, axis=0, keepdims=True)
+
+        # size: n_neurons x 1
+        dl_db = dl_db.T
 
         self.gradients = dl_dz
 

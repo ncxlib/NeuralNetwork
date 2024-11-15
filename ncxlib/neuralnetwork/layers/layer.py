@@ -13,7 +13,7 @@ class Layer(ABC):
         n_neurons: Optional[int] = None,
         n_inputs: Optional[int] = None,
         activation: Optional[Activation] = ReLU,
-        optimizer: Optional[Optimizer] = SGD,
+        optimizer: Optional[Optimizer] = SGD(),
         loss_fn: Optional[LossFunction] = MeanSquaredError,
         initializer: Optional[Initializer] = HeNormal(),
         weights_initializer: Optional[Initializer] = HeNormal(),
@@ -36,15 +36,17 @@ class Layer(ABC):
         self.weights_initializer = weights_initializer if weights_initializer else initializer
         self.bias_initializer = bias_initializer if bias_initializer else initializer
 
-        # inputs remain same for all so just store in n_inputs x 1
+        # inputs remain same for all so just store in batch_size x n_inputs
         self.inputs = None
 
         # weights size:  n_neurons * n_inputs
         self.W = None  
         self.old_W = None
 
-        # bias and weighted sums size : n_neurons x 1
+        # bias size : n_neurons x 1
         self.b = None 
+
+        # weighted sums size: batch_size x n_neurons
         self.z = None
 
         # gradients size n_neurons x 1
@@ -54,8 +56,8 @@ class Layer(ABC):
         self.activated = None
 
     def initialize_params(self, inputs: np.ndarray):
-        # inputs always get updated
-        self.inputs = inputs.reshape((self.n_inputs, 1))
+        # inputs always get updated 
+        self.inputs = inputs
 
         # only initialize if not initialized yet, if not use previously learned values
         if self.W is None or self.b is None:
