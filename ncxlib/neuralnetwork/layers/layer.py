@@ -13,7 +13,7 @@ class Layer(ABC):
         n_neurons: Optional[int] = None,
         n_inputs: Optional[int] = None,
         activation: Optional[Activation] = ReLU,
-        optimizer: Optional[Optimizer] = SGD,
+        optimizer: Optional[Optimizer] = SGD(),
         loss_fn: Optional[LossFunction] = MeanSquaredError,
         initializer: Optional[Initializer] = HeNormal(),
         weights_initializer: Optional[Initializer] = HeNormal(),

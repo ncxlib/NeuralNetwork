@@ -71,7 +71,6 @@ class NeuralNetwork:
             layer.back_propagation(next_layer, learning_rate)
             next_layer = layer
         
-    @timer
     def train(
         self,
         inputs: np.ndarray,
@@ -102,7 +101,7 @@ class NeuralNetwork:
 
                 output_activations = self.forward_propagate_all(input_vector)
 
-                output_activations = np.clip(output_activations, 1e-7, 1 - 1e-7) 
+                # output_activations = np.clip(output_activations, 1e-7, 1 - 1e-7) 
                 sample_loss = self.loss_fn().compute_loss(y_true, output_activations)
                 total_loss += sample_loss
 
