@@ -78,6 +78,7 @@ class NeuralNetwork:
         epochs = 10,
         learning_rate=0.001,
         batch_size = 32,
+        shuffle=True,
     ):
 
         if not self.compiled:
@@ -90,6 +91,12 @@ class NeuralNetwork:
             progress.set_description(f"Epoch: {epoch} | Loss: {loss}")
             
             total_loss = 0
+
+            if shuffle:
+                indices = np.arange(len(inputs))
+                np.random.shuffle(indices)
+                inputs = inputs[indices]
+                targets = targets[indices]
 
             
             for i in range(len(inputs)):
