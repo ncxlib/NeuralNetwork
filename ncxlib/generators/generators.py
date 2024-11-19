@@ -9,9 +9,10 @@ def generate_training_data(
     normalize=False,
     to_csv=False,
     file_path="training_data.csv",
+    label_range=(0, 1),
 ):
     """
-    Generates structured data for neural network training with labels 1/0.
+    Generates structured data for neural network training with labels 1/0 or 1/-1.
     The data will have a pattern where positive and negative samples are 
     separated into clusters.
 
@@ -23,6 +24,7 @@ def generate_training_data(
     - normalize (bool): Whether to normalize features.
     - to_csv (bool): Whether to save the data to a CSV file.
     - file_path (str): Path to save the CSV file (if to_csv=True).
+    - label_range (tuple): Tuple specifying the label range (e.g., (0, 1) or (-1, 1)).
 
     Returns:
     - X (np.ndarray): Feature matrix (num_samples, num_features).
@@ -35,10 +37,16 @@ def generate_training_data(
     num_label_0 = num_samples - num_label_1
 
     X_label_1 = np.random.randn(num_label_1, num_features) + 2
-    y_label_1 = np.ones(num_label_1)
-
     X_label_0 = np.random.randn(num_label_0, num_features) - 2
-    y_label_0 = np.zeros(num_label_0)
+
+    if label_range == (0, 1):
+        y_label_1 = np.ones(num_label_1)
+        y_label_0 = np.zeros(num_label_0)
+    elif label_range == (-1, 1):
+        y_label_1 = np.ones(num_label_1)
+        y_label_0 = -np.ones(num_label_0)
+    else:
+        raise ValueError("label_range must be (0, 1) or (-1, 1)")
 
     X = np.vstack([X_label_1, X_label_0])
     y = np.hstack([y_label_1, y_label_0])
