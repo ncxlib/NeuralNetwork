@@ -1,6 +1,9 @@
 from .generators import (
+generate_cartesian_uniform_data,
+generate_labeled_data_with_regions,
 generate_training_data,
-integer_array,
-normal_distribution_array,
-random_array,
+)
+from .region import (
+Rectangle,
+Region,
 )

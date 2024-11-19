@@ -1,54 +1,5 @@
 import pandas as pd
 import numpy as np
-import random
-import string
-
-
-def random_array(shape, low=0.0, high=1.0):
-    """
-    Generates a random array with the given shape and values in the range [low, high).
-
-    Parameters:
-    - shape (tuple): The shape of the array to generate.
-    - low (float): The lower bound of the random values.
-    - high (float): The upper bound of the random values.
-
-    Returns:
-    - np.array: A random array of the specified shape and value range.
-    """
-    return np.random.uniform(low, high, size=shape)
-
-
-def normal_distribution_array(shape, mean=0.0, std=1.0):
-    """
-    Generates a random array following a normal distribution.
-
-    Parameters:
-    - shape (tuple): The shape of the array to generate.
-    - mean (float): The mean of the distribution.
-    - std (float): The standard deviation of the distribution.
-
-    Returns:
-    - np.array: A random array drawn from a normal distribution.
-    """
-    return np.random.normal(mean, std, size=shape)
-
-
-def integer_array(shape, low=0, high=10):
-    """
-    Generates an array of random integers within the specified range.
-
-    Parameters:
-    - shape (tuple): The shape of the array to generate.
-    - low (int): The minimum integer value (inclusive).
-    - high (int): The maximum integer value (exclusive).
-
-    Returns:
-    - np.array: An array of random integers.
-    """
-    return np.random.randint(low, high, size=shape)
-
-
 
 def generate_training_data(
     num_samples=1000,
@@ -105,3 +56,58 @@ def generate_training_data(
         df.to_csv(file_path, index=False)
 
     return X, y
+
+def generate_cartesian_uniform_data(x_range, y_range, num_samples=100, random_seed=None): 
+    if not random_seed:
+        np.random.seed(random_seed)
+
+    x = np.random.uniform(x_range[0], x_range[1], size=num_samples)
+    y = np.random.uniform(y_range[0], y_range[1], size=num_samples)
+
+    return np.column_stack((x, y))
+
+    
+
+def _assign_labels(points, regions, p_positive_inside=0.99, p_positive_outside=0.03, random_seed=None):
+  
+    if random_seed is not None:
+        np.random.seed(random_seed)
+
+    labels = []
+    for point in points:
+        in_positive_region = any(region.contains(point) for region in regions)
+
+        if in_positive_region:
+            label = 1 if np.random.rand() < p_positive_inside else -1
+        else:
+            label = 1 if np.random.rand() < p_positive_outside else -1
+
+        labels.append(label)
+
+    return np.array(labels)
+
+def generate_labeled_data_with_regions(n, x_range, y_range, regions, p_positive_inside=0.99, p_positive_outside=0.03, normalize=False, random_seed=None):
+    """
+    Generates labeled data for classification tasks.
+
+    Parameters:
+    - n (int): Number of points to generate.
+    - x_range (tuple): Range (min, max) for the x-coordinate.
+    - y_range (tuple): Range (min, max) for the y-coordinate.
+    - regions (list of Region): List of regions defining positive areas.
+    - p_positive_inside (float): Probability of label +1 inside positive regions.
+    - p_positive_outside (float): Probability of label +1 outside positive regions.
+    - normalize (bool): Whether to normalize the features.
+    - random_seed (int): Random seed for reproducibility.
+
+    Returns:
+    - np.ndarray: Feature matrix of shape (n, 2).
+    - np.ndarray: Label vector of shape (n,).
+    """
+    points = generate_cartesian_uniform_data(x_range, y_range, num_samples=n, random_seed=random_seed)
+    labels = _assign_labels(points, regions, p_positive_inside, p_positive_outside, random_seed)
+
+    if normalize:
+        points = (points - np.mean(points, axis=0)) / np.std(points, axis=0)
+
+    return points, labels

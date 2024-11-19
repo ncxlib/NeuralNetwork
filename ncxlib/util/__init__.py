@@ -3,6 +3,7 @@ LOG,
 log,
 )
 from .preloaded import (
+CACHE_DIR,
 download,
 load_data,
 )
