@@ -86,6 +86,8 @@ class NeuralNetwork:
         progress = tqdm(range(epochs))
         loss = np.inf
 
+        num_classes = len(np.unique(targets))
+
         for epoch in progress:
             progress.set_description(f"Epoch: {epoch} | Loss: {loss}")
             
@@ -101,12 +103,16 @@ class NeuralNetwork:
 
                 X_batch = inputs[i:i + batch_size]
                 y_batch = targets[i:i + batch_size]
+                y_true = y_batch.reshape((len(y_batch), 1))
 
-                y_true = np.zeros((len(y_batch), self.layers[-1].n_neurons))
-                for j, class_label in enumerate(y_batch):
-                    y_true[j, int(class_label)] = 1
+                if self.layers[-1].n_neurons > 1:
+                    y_true = np.zeros((len(y_batch), self.layers[-1].n_neurons))
+                    for j, class_label in enumerate(y_batch):
+                        y_true[j, int(class_label)] = 1
 
                 output_activations = self.forward_propagate_all(X_batch)
+
+                # print(f"y_true: {y_true}, y_pred: {output_activations}")
                 batch_loss = self.loss_fn().compute_loss(y_true, output_activations)
                 total_loss += batch_loss
 
@@ -116,17 +122,56 @@ class NeuralNetwork:
             loss = total_loss / len(inputs)
         
 
-    def predict(self, inputs: np.ndarray, multiple=False):
-        if multiple:
-            return [np.argmax(self.forward_propagate_all_no_save(input)) for input in inputs]
+    def predict(self, inputs: np.ndarray, multiple=False, raw=False):
+        """
+        Predicts outputs for the given inputs.
 
-        return np.argmax(self.forward_propagate_all(inputs))
+        Parameters:
+            inputs (np.ndarray): Input data.
+            multiple (bool): If True, returns predictions for each input individually.
+            raw (bool): If True, returns raw probabilities/logits instead of class predictions.
+            threshold (float): Threshold for binary classification when using probabilities.
+
+        Returns:
+            np.ndarray or List: Predicted class labels or raw probabilities/logits.
+        """
+        activations = [self.forward_propagate_all_no_save(input) for input in inputs]
+
+        if raw:
+            return activations if multiple else activations[0]
+
+        # binary classification
+        if self.layers[-1].n_neurons == 1:
+
+            # assumes -1, 1 labels
+            if min(activations) < 0:
+                predictions = [1 if p >= 0 else -1 for p in activations]
+            
+            # assumes 0, 1 labels
+            else:
+                predictions = [1 if p >= 0.5 else 0 for p in activations]
+
+        else: 
+            predictions = [np.argmax(p) for p in activations]
+
+        return predictions if multiple else predictions[0]
 
     def evaluate(self, inputs, targets):
+        """
+        Evaluates the model on given inputs and targets.
+
+        Parameters:
+            inputs (np.ndarray): Input data.
+            targets (np.ndarray): True class labels.
+
+        Returns:
+            float: Accuracy of the model on the given data.
+        """
         predictions = self.predict(inputs, multiple=True)
-        accuracy = np.mean(predictions == targets)
+        accuracy = np.mean(np.array(predictions) == np.array(targets))
         print(f"Accuracy: {accuracy * 100:.2f}%")
         return accuracy
+
     
     def save_model(self, filepath):
         '''
