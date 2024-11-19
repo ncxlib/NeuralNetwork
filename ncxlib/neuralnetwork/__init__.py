@@ -20,6 +20,7 @@ OutputLayer,
 from .losses import (
 BinaryCrossEntropy,
 CategoricalCrossEntropy,
+HingeLoss,
 LossFunction,
 MeanSquaredError,
 )
