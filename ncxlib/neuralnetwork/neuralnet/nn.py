@@ -195,7 +195,7 @@ class NeuralNetwork:
                 accuracy = (sensitivity + specificity) / 2
 
             elif metric == "roc":
-                accuracy = self.calculate_roc_area(probabilities, targets)
+                accuracy = self.calculate_roc_area(probabilities, targets, positive_class)
                 
             results[metric] = accuracy
 
@@ -203,41 +203,51 @@ class NeuralNetwork:
         return results
                 
 
-    def calculate_roc_area(self, probabilities, targets):
-        sorted_indices = np.argsort(probabilities)[::-1]
-        y_test_sorted = targets[sorted_indices]
-        probabilities_sorted = probabilities[sorted_indices]
+    def calculate_roc_area(self, probabilities, targets, positive_class):
+        
+        unique_vals = np.unique(probabilities)
+        if set(unique_vals) == {-1, 1}:
+            probabilities = (probabilities + 1) / 2
+            
+        probabilities = (probabilities + 1) / 2 
 
-        TP = 0
-        FP = 0
-        FN = sum(targets == 1)
-        TN = sum(targets == 0)
-        TPR_list = []
-        FPR_list = []
-        prev_prob = -1
+        targets = targets == positive_class
 
+        sorted_indices = np.argsort(probabilities, kind="mergesort")[::-1]
+        probabilities = probabilities[sorted_indices]
+        targets = targets[sorted_indices]
 
-        # we loop because we need to calculate tpr and fpr for each threshold
-        for i in range(len(probabilities_sorted)):
-            if probabilities_sorted[i] != prev_prob:
-                TPR_list.append(TP / (TP + FN) if (TP + FN) > 0 else 0)
-                FPR_list.append(FP / (FP + TN) if (FP + TN) > 0 else 0)
-                prev_prob = probabilities_sorted[i]
+        weight = 1.0
 
-            # update all counts
-            if y_test_sorted[i] == 1:
-                TP += 1
-                FN -= 1
-            else:
-                FP += 1
-                TN -= 1
+        distinct_indices = np.where(np.diff(probabilities))[0]
+        threshold_idxs = np.r_[distinct_indices, len(targets) - 1]
 
-        # adding 1,1 to both for a full roc curve
-        TPR_list.append(1)
-        FPR_list.append(1)
+        arr = (1 - targets) * weight
+        out = np.cumsum(arr, axis=None, dtype=np.float64)
 
-        # calculate area under curve using trapezoid area rule
-        return np.trapz(TPR_list, FPR_list)
+        tps = out[threshold_idxs]
+
+        fps = 1 + threshold_idxs - tps
+        tps = np.r_[0, tps]
+        fps = np.r_[0, fps]
+
+        thresholds = probabilities[threshold_idxs]
+        thresholds = np.r_[np.inf, thresholds]
+
+        if fps[-1] <= 0:
+            fpr = np.repeat(np.nan, fps.shape)
+        else:
+            fpr = fps / fps[-1]
+
+        if tps[-1] <= 0:
+            tpr = np.repeat(np.nan, tps.shape)
+        else:
+            tpr = tps / tps[-1]
+
+        auc = np.trapz(fpr, tpr)
+
+        return auc, fpr, tpr, thresholds
+    
     
     def save_model(self, filepath):
         '''

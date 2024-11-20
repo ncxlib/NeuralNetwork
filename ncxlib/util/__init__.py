@@ -2,6 +2,9 @@ from .logs import (
 LOG,
 log,
 )
+from .plot import (
+plot_roc_curve,
+)
 from .preloaded import (
 CACHE_DIR,
 download,

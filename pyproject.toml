@@ -19,6 +19,7 @@ pandas = "^2.2.3"
 pillow = "^11.0.0"
 h5py = "^3.12.1"
 toml = "^0.10.2"
+matplotlib = "^3.9.2"
 
 [tool.poetry.scripts]
 gen = "scripts:add_init_files"
@@ -31,5 +32,4 @@ deploy = "scripts:run_poetry_commands"
 black = "^24.10.0"
 jupyterlab = "^4.3.0"
 tensorflow = "^2.18.0"
-matplotlib = "^3.9.2"
 scikit-learn = "^1.5.2"

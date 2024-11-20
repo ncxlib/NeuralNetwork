@@ -119,3 +119,15 @@ def generate_labeled_data_with_regions(n, x_range, y_range, regions, p_positive_
         points = (points - np.mean(points, axis=0)) / np.std(points, axis=0)
 
     return points, labels
+
+def generate_fine_grid_data(x_range, y_range, regions, grid_size=100):
+    x1 = np.linspace(x_range[0], x_range[1], grid_size)
+    x2 = np.linspace(y_range[0], y_range[1], grid_size)
+    
+    X1, X2 = np.meshgrid(x1, x2)
+    
+    grid = np.c_[X1.ravel(), X2.ravel()]
+    
+    true_labels = _assign_labels(grid, regions)
+    
+    return grid, true_labels
