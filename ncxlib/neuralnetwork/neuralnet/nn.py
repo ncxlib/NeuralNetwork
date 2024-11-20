@@ -122,7 +122,7 @@ class NeuralNetwork:
             loss = total_loss / len(inputs)
         
 
-    def predict(self, inputs: np.ndarray, multiple=False, raw=False):
+    def predict(self, inputs: np.ndarray, multiple=True, raw=False):
         """
         Predicts outputs for the given inputs.
 
@@ -136,9 +136,6 @@ class NeuralNetwork:
             np.ndarray or List: Predicted class labels or raw probabilities/logits.
         """
         activations = [self.forward_propagate_all_no_save(input) for input in inputs]
-
-        if raw:
-            return activations if multiple else activations[0]
 
         # binary classification
         if self.layers[-1].n_neurons == 1:
@@ -154,9 +151,11 @@ class NeuralNetwork:
         else: 
             predictions = [np.argmax(p) for p in activations]
 
-        return predictions if multiple else predictions[0]
+        
+        probabilities = np.array([a[0][0] if self.layers[-1].n_neurons == 1 else a[0] for a in activations])
+        return (predictions, probabilities) if multiple else (predictions[0], probabilities[0])
 
-    def evaluate(self, inputs, targets):
+    def evaluate(self, inputs, targets, metrics=["classification"], show=True):
         """
         Evaluates the model on given inputs and targets.
 
@@ -166,12 +165,79 @@ class NeuralNetwork:
 
         Returns:
             float: Accuracy of the model on the given data.
-        """
-        predictions = self.predict(inputs, multiple=True)
-        accuracy = np.mean(np.array(predictions) == np.array(targets))
-        print(f"Accuracy: {accuracy * 100:.2f}%")
-        return accuracy
+        """ 
 
+        unique_targets = np.unique(targets)
+        positive_class, negative_class = 1, 0
+
+        # for +ve / -ve classes
+        if len(np.where(unique_targets >= 0)) != len(unique_targets):
+            positive_class = unique_targets[unique_targets > 0][0]
+            negative_class = unique_targets[unique_targets < 0][0]
+        
+        results = {}
+
+        predictions, probabilities = self.predict(inputs, multiple=True)
+
+        for metric in metrics:
+            if metric == "classification":
+                accuracy = np.mean(np.array(predictions) == np.array(targets))
+            
+            elif metric == "balanced":
+                
+                TP = np.sum((targets == positive_class) & (predictions == positive_class))
+                TN = np.sum((targets == negative_class) & (predictions == negative_class))
+                FP = np.sum((targets == negative_class) & (predictions == positive_class))
+                FN = np.sum((targets == positive_class) & (predictions == negative_class))
+
+                sensitivity = TP / (TP + FN)
+                specificity = TN / (TN + FP)
+                accuracy = (sensitivity + specificity) / 2
+
+            elif metric == "roc":
+                accuracy = self.calculate_roc_area(probabilities, targets)
+                
+            results[metric] = accuracy
+
+        if show: print(results)
+        return results
+                
+
+    def calculate_roc_area(self, probabilities, targets):
+        sorted_indices = np.argsort(probabilities)[::-1]
+        y_test_sorted = targets[sorted_indices]
+        probabilities_sorted = probabilities[sorted_indices]
+
+        TP = 0
+        FP = 0
+        FN = sum(targets == 1)
+        TN = sum(targets == 0)
+        TPR_list = []
+        FPR_list = []
+        prev_prob = -1
+
+
+        # we loop because we need to calculate tpr and fpr for each threshold
+        for i in range(len(probabilities_sorted)):
+            if probabilities_sorted[i] != prev_prob:
+                TPR_list.append(TP / (TP + FN) if (TP + FN) > 0 else 0)
+                FPR_list.append(FP / (FP + TN) if (FP + TN) > 0 else 0)
+                prev_prob = probabilities_sorted[i]
+
+            # update all counts
+            if y_test_sorted[i] == 1:
+                TP += 1
+                FN -= 1
+            else:
+                FP += 1
+                TN -= 1
+
+        # adding 1,1 to both for a full roc curve
+        TPR_list.append(1)
+        FPR_list.append(1)
+
+        # calculate area under curve using trapezoid area rule
+        return np.trapz(TPR_list, FPR_list)
     
     def save_model(self, filepath):
         '''
