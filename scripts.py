@@ -18,7 +18,8 @@ def add_init_files():
         "preprocessing",
         "generators",
         "util",
-        "preloaded"
+        "preloaded",
+        "evaluation"
     ]
     directories = [f"ncxlib/{file}" for file in directories]
 

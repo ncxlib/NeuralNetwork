@@ -33,13 +33,10 @@ class NeuralNetwork:
                     "The inputs for a layer should match the number of neuron outputs of the previous layer."
                 )
                 
-
             if not layer.n_inputs:
                 layer.n_inputs = previous_outputs
 
             previous_outputs = layer.n_neurons
-
-         
 
             layer.activation = layer.activation()
 
