@@ -1,8 +1,12 @@
-from .initializer import ( Initializer, )
+# Automatically generated __init__.py
 from .he import (
-HeNormal,
+    HeNormal,
+)
+from .initializer import (
+    Initializer,
+)
+from .zero import (
+    Zero,
 )
 
-from .zero import (
-Zero,
-)
+__all__ = ["HeNormal", "Initializer", "Zero"]

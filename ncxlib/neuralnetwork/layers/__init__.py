@@ -1,11 +1,15 @@
-from .layer import ( Layer, )
+# Automatically generated __init__.py
 from .fullyconnectedlayer import (
-FullyConnectedLayer,
+    FullyConnectedLayer,
 )
 from .inputlayer import (
-InputLayer,
+    InputLayer,
+)
+from .layer import (
+    Layer,
+)
+from .outputlayer import (
+    OutputLayer,
 )
 
-from .outputlayer import (
-OutputLayer,
-)
+__all__ = ["FullyConnectedLayer", "InputLayer", "Layer", "OutputLayer"]

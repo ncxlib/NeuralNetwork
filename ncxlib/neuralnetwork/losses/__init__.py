@@ -1,14 +1,24 @@
-from .lossfunction import ( LossFunction, )
+# Automatically generated __init__.py
 from .binarycrossentropy import (
-BinaryCrossEntropy,
+    BinaryCrossEntropy,
 )
 from .categoricalcrossentropy import (
-CategoricalCrossEntropy,
+    CategoricalCrossEntropy,
 )
 from .hinge import (
-HingeLoss,
+    HingeLoss,
+)
+from .lossfunction import (
+    LossFunction,
+)
+from .meansquarederror import (
+    MeanSquaredError,
 )
 
-from .meansquarederror import (
-MeanSquaredError,
-)
+__all__ = [
+    "BinaryCrossEntropy",
+    "CategoricalCrossEntropy",
+    "HingeLoss",
+    "LossFunction",
+    "MeanSquaredError",
+]
