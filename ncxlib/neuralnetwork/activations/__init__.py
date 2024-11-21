@@ -1,18 +1,21 @@
+# Automatically generated __init__.py
 from .activation import (
-Activation,
+    Activation,
 )
 from .leaky_relu import (
-LeakyReLU,
+    LeakyReLU,
 )
 from .relu import (
-ReLU,
+    ReLU,
 )
 from .sigmoid import (
-Sigmoid,
+    Sigmoid,
 )
 from .softmax import (
-Softmax,
+    Softmax,
 )
 from .tanh import (
-Tanh,
+    Tanh,
 )
+
+__all__ = ["Activation", "LeakyReLU", "ReLU", "Sigmoid", "Softmax", "Tanh"]

@@ -20,6 +20,7 @@ pillow = "^11.0.0"
 h5py = "^3.12.1"
 toml = "^0.10.2"
 matplotlib = "^3.9.2"
+pyvis = "^0.3.2"
 
 [tool.poetry.scripts]
 gen = "scripts:add_init_files"
