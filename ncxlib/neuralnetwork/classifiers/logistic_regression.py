@@ -41,3 +41,14 @@ class LogisticRegression(Classifier):
         '''
         probabilities = self.predict()
         return (probabilities > threshold).astype(int)
+
+
+    def accuracy(self, y_true : np.ndarray) -> float:
+        '''
+        Provides an classification accuracy against number of correct labels vs all labels.
+        '''
+        predictions = self.classify()
+        correct = np.sum(predictions == y_true)
+
+        accuracy = correct / len(y_true)
+        return accuracy
