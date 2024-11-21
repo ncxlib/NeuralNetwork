@@ -1,6 +1,6 @@
 import numpy as np
 from typing import Callable
-from classifiers import Classifier
+from ncxlib.neuralnetwork.classifiers import Classifier
 
 from ncxlib.neuralnetwork.activations import Sigmoid
 
