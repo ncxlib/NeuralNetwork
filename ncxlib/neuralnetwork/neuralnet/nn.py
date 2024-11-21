@@ -168,7 +168,7 @@ class NeuralNetwork:
         positive_class, negative_class = 1, 0
 
         # for +ve / -ve classes
-        if len(np.where(unique_targets >= 0)) != len(unique_targets):
+        if np.sum(unique_targets >= 0) != len(unique_targets):
             positive_class = unique_targets[unique_targets > 0][0]
             negative_class = unique_targets[unique_targets < 0][0]
         
