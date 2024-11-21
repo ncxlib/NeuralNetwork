@@ -6,6 +6,10 @@ Sigmoid,
 Softmax,
 Tanh,
 )
+from .classifiers import (
+Classifier,
+LogisticRegression,
+)
 from .initializers import (
 HeNormal,
 Initializer,
