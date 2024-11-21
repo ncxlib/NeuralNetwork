@@ -1,6 +1,3 @@
-# Automatically generated __init__.py
 from .nn import (
-    NeuralNetwork,
+NeuralNetwork,
 )
-
-__all__ = ["NeuralNetwork"]

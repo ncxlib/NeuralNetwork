@@ -1,28 +1,18 @@
-# Automatically generated __init__.py
+from .preprocessor import (
+Preprocessor,
+)
 from .imagegrayscaler import (
-    ImageGrayscaler,
+ImageGrayscaler,
 )
 from .imagerescaler import (
-    ImageRescaler,
-)
-from .minmaxscaler import (
-    MinMaxScaler,
-)
-from .onehotencoder import (
-    OneHotEncoder,
-)
-from .preprocessor import (
-    Preprocessor,
+ImageRescaler,
 )
 from .scaler import (
-    Scaler,
+Scaler,
 )
-
-__all__ = [
-    "ImageGrayscaler",
-    "ImageRescaler",
-    "MinMaxScaler",
-    "OneHotEncoder",
-    "Preprocessor",
-    "Scaler",
-]
+from .minmaxscaler import (
+MinMaxScaler,
+)
+from .onehotencoder import (
+OneHotEncoder,
+)

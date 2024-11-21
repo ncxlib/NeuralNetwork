@@ -1,6 +1,3 @@
-# Automatically generated __init__.py
 from .visualize import (
-    visualize,
+visualize,
 )
-
-__all__ = ["visualize"]

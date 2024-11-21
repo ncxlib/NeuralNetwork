@@ -1,12 +1,9 @@
-# Automatically generated __init__.py
-from .csvdataset import (
-    CSVDataset,
-)
 from .dataset import (
-    Dataset,
+Dataset,
+)
+from .csvdataset import (
+CSVDataset,
 )
 from .imagedataset import (
-    ImageDataset,
+ImageDataset,
 )
-
-__all__ = ["CSVDataset", "Dataset", "ImageDataset"]
