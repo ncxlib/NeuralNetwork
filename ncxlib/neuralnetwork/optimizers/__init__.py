@@ -1,18 +1,15 @@
-# Automatically generated __init__.py
 from .adam import (
-    Adam,
+Adam,
 )
 from .optimizer import (
-    Optimizer,
+Optimizer,
 )
 from .rmsprop import (
-    RMSProp,
+RMSProp,
 )
 from .sgd import (
-    SGD,
+SGD,
 )
 from .sgdmomentum import (
-    SGDMomentum,
+SGDMomentum,
 )
-
-__all__ = ["Adam", "Optimizer", "RMSProp", "SGD", "SGDMomentum"]

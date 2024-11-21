@@ -1,12 +1,9 @@
-# Automatically generated __init__.py
-from .csvdataloader import (
-    CSVDataLoader,
-)
 from .dataloader import (
-    DataLoader,
+DataLoader,
+)
+from .csvdataloader import (
+CSVDataLoader,
 )
 from .imagedataloader import (
-    ImageDataLoader,
+ImageDataLoader,
 )
-
-__all__ = ["CSVDataLoader", "DataLoader", "ImageDataLoader"]
