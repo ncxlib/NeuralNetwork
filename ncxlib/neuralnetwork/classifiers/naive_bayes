@@ -1,9 +1,0 @@
-from ncxlib.neuralnetwork import Classifier
-
-class NaiveBayes(Classifier):
-    def __init__(self, weights, bias, inputs):
-        super().__init__(weights, bias, inputs)
-
-    def calculate_likelihood(self):
-        pass
-
