@@ -6,6 +6,7 @@ from ncxlib.neuralnetwork.losses import LossFunction, MeanSquaredError, BinaryCr
 from ncxlib.neuralnetwork.activations import ReLU, Sigmoid, Softmax, LeakyReLU, Tanh
 from ncxlib.util import log, timer, show_time, time_this
 from ncxlib.neuralnetwork.layers import FullyConnectedLayer
+from ncxlib.evaluation import classification_accuracy, balanced_accuracy, roc_area
 import h5py, uuid
 
 class NeuralNetwork:
@@ -163,14 +164,6 @@ class NeuralNetwork:
         Returns:
             float: Accuracy of the model on the given data.
         """ 
-
-        unique_targets = np.unique(targets)
-        positive_class, negative_class = 1, 0
-
-        # for +ve / -ve classes
-        if np.sum(unique_targets >= 0) != len(unique_targets):
-            positive_class = unique_targets[unique_targets > 0][0]
-            negative_class = unique_targets[unique_targets < 0][0]
         
         results = {}
 
@@ -178,74 +171,19 @@ class NeuralNetwork:
 
         for metric in metrics:
             if metric == "classification":
-                accuracy = np.mean(np.array(predictions) == np.array(targets))
+                accuracy = classification_accuracy(predictions, targets)
             
             elif metric == "balanced":
-                
-                TP = np.sum((targets == positive_class) & (predictions == positive_class))
-                TN = np.sum((targets == negative_class) & (predictions == negative_class))
-                FP = np.sum((targets == negative_class) & (predictions == positive_class))
-                FN = np.sum((targets == positive_class) & (predictions == negative_class))
-
-                sensitivity = TP / (TP + FN)
-                specificity = TN / (TN + FP)
-                accuracy = (sensitivity + specificity) / 2
+                accuracy = balanced_accuracy(predictions, targets)
 
             elif metric == "roc":
-                accuracy = self.calculate_roc_area(probabilities, targets, positive_class)
+                accuracy = roc_area(probabilities, targets)
                 
             results[metric] = accuracy
 
         if show: print(results)
         return results
                 
-
-    def calculate_roc_area(self, probabilities, targets, positive_class):
-        
-        unique_vals = np.unique(probabilities)
-        if set(unique_vals) == {-1, 1}:
-            probabilities = (probabilities + 1) / 2
-            
-        probabilities = (probabilities + 1) / 2 
-
-        targets = targets == positive_class
-
-        sorted_indices = np.argsort(probabilities, kind="mergesort")[::-1]
-        probabilities = probabilities[sorted_indices]
-        targets = targets[sorted_indices]
-
-        weight = 1.0
-
-        distinct_indices = np.where(np.diff(probabilities))[0]
-        threshold_idxs = np.r_[distinct_indices, len(targets) - 1]
-
-        arr = (1 - targets) * weight
-        out = np.cumsum(arr, axis=None, dtype=np.float64)
-
-        tps = out[threshold_idxs]
-
-        fps = 1 + threshold_idxs - tps
-        tps = np.r_[0, tps]
-        fps = np.r_[0, fps]
-
-        thresholds = probabilities[threshold_idxs]
-        thresholds = np.r_[np.inf, thresholds]
-
-        if fps[-1] <= 0:
-            fpr = np.repeat(np.nan, fps.shape)
-        else:
-            fpr = fps / fps[-1]
-
-        if tps[-1] <= 0:
-            tpr = np.repeat(np.nan, tps.shape)
-        else:
-            tpr = tps / tps[-1]
-
-        auc = np.trapz(fpr, tpr)
-
-        return auc, fpr, tpr, thresholds
-    
-    
     def save_model(self, filepath):
         '''
         Function: 
