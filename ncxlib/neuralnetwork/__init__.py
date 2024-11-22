@@ -9,6 +9,7 @@ Tanh,
 from .classifiers import (
 Classifier,
 LogisticRegression,
+NaiveBayesClassifier,
 )
 from .initializers import (
 HeNormal,
