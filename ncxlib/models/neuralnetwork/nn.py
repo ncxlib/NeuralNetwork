@@ -9,6 +9,7 @@ from ncxlib.models.neuralnetwork.layers import FullyConnectedLayer
 from ncxlib.models import Model 
 import h5py, uuid
 
+
 class NeuralNetwork(Model):
     def __init__(self, layers: Optional[list[Layer]] = [], loss_fn: Optional[LossFunction] = MeanSquaredError):
         
@@ -165,6 +166,11 @@ class NeuralNetwork(Model):
         filename = str(uuid.uuid4().hex) + ".h5"
         final_path = filepath + "/" + filename
 
+        if final_path.startswith("/"):
+            final_path = ".." + filepath + "/" + filename
+        elif not final_path.startswith("../"):
+            final_path = "../" + filepath + "/" + filename
+        
         with h5py.File(final_path, 'w') as f:
             loss_fn_name = self.loss_fn.__name__ if hasattr(self.loss_fn, '__name__') else self.loss_fn.__class__.__name__
             f.attrs['loss_function'] = loss_fn_name
