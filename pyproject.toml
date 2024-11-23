@@ -24,7 +24,7 @@ pyvis = "^0.3.2"
 
 [tool.poetry.scripts]
 gen = "scripts:add_init_files"
-clean = "scripts:remove_all_init_files"
+clean = "scripts:clean"
 fmt = "scripts:fmt"
 notebook = "scripts:notebook"
 deploy = "scripts:run_poetry_commands"

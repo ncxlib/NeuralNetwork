@@ -2,6 +2,7 @@ import subprocess
 import os
 import nbformat as nbf
 import toml
+import shutil
 
 def add_init_files():
     """
@@ -252,3 +253,25 @@ def run_poetry_commands():
     subprocess.run(["poetry", "install"], check=True)
     subprocess.run(["poetry", "run", "gen"], check=True)
     subprocess.run(["poetry", "publish", "--build"], check=True)
+
+def clear_cache(start_dir='.'):
+    """
+    Recursively delete all __pycache__ folders and their contents
+    from the given directory and its subdirectories.
+
+    :param start_dir: The starting directory (default is current directory).
+    """
+    for root, dirs, files in os.walk(start_dir):
+        for dir_name in dirs:
+            if dir_name == '__pycache__':
+                pycache_path = os.path.join(root, dir_name)
+                try:
+                    shutil.rmtree(pycache_path)
+                    print(f"Deleted: {pycache_path}")
+                except Exception as e:
+                    print(f"Failed to delete {pycache_path}: {e}")
+
+
+def clean():
+    clear_cache()
+    remove_all_init_files()
