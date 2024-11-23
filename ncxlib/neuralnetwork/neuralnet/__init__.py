@@ -1,3 +1,0 @@
-from .nn import (
-NeuralNetwork,
-)

@@ -131,3 +131,27 @@ def generate_fine_grid_data(x_range, y_range, regions, grid_size=100):
     true_labels = _assign_labels(grid, regions)
     
     return grid, true_labels
+
+def sample_from_gaussian(mean, cov, n_samples):
+    return np.random.multivariate_normal(mean, cov, n_samples)
+
+def sample_from_mixture(weights, means, covariances, n_samples):
+    components = np.random.choice(len(weights), size=n_samples, p=weights)
+    samples = []
+    for component in components:
+        sample = sample_from_gaussian(means[component], covariances[component], 1)
+        samples.append(sample)
+    return np.vstack(samples)
+
+def generate_from_guassian_mixures(n_samples, P_Y_0, P_Y_1, mu_0, sigma_0, w_0, mu_1, sigma_1, w_1):
+    labels = np.random.choice([0, 1], size=n_samples, p=[P_Y_0, P_Y_1])
+    
+    data = []
+    for label in labels:
+        if label == 0:
+            sample = sample_from_mixture(w_0, mu_0, sigma_0, 1)
+        else:
+            sample = sample_from_mixture(w_1, mu_1, sigma_1, 1)
+        data.append(sample)
+    
+    return np.vstack(data), labels

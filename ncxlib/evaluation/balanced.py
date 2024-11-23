@@ -1,5 +1,5 @@
 import numpy as np 
-from ncxlib.evaluation import split_classes 
+from ncxlib.util import split_classes 
 
 def balanced_accuracy(predictions, targets):
     

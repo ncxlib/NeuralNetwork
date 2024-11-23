@@ -1,49 +1,65 @@
-import numpy as np 
-from ncxlib.evaluation import split_classes
+import numpy as np
+from ncxlib.util import split_classes
 
-def roc_area(probabilities, targets, positive_class):
+def roc_area(probabilities, targets):
+    """
+    Compute the AUC, FPR, TPR, and thresholds for ROC analysis.
 
-    positive_class, _ = split_classes(targets)
-        
-    unique_vals = np.unique(probabilities)
-    if set(unique_vals) == {-1, 1}:
-        probabilities = (probabilities + 1) / 2
-        
-    probabilities = (probabilities + 1) / 2 
+    Parameters:
+    - probabilities (np.ndarray): Predicted probabilities.
+        - Binary classification: Shape (n,).
+        - Multiclass classification: Shape (n, k), where each column represents a class.
+    - targets (np.ndarray): True class labels. Binary or multiclass.
 
-    targets = targets == positive_class
+    Returns:
+    - auc (float): Area Under the ROC Curve.
+    - fpr (np.ndarray): False Positive Rate.
+    - tpr (np.ndarray): True Positive Rate.
+    - thresholds (np.ndarray): Threshold values.
+    """
 
+    probabilities = probabilities.copy()
+    targets = targets.copy()
+    if probabilities.ndim == 2:
+        n_classes = probabilities.shape[1]
+        aucs, fprs, tprs, threshold_list = [], [], [], []
+        for class_idx in range(n_classes):
+            binary_targets = (targets == class_idx).astype(int)
+            class_probabilities = probabilities[:, class_idx]
+
+            auc, fpr, tpr, thresholds = _binary_roc_area(class_probabilities, binary_targets)
+            aucs.append(auc)
+            fprs.append(fpr)
+            tprs.append(tpr)
+            threshold_list.append(thresholds)
+
+        return aucs, fprs, tprs, threshold_list
+    else:
+        return _binary_roc_area(probabilities, targets)
+
+def _binary_roc_area(probabilities, targets):
+    """
+    Compute AUC, FPR, TPR, and thresholds for binary classification.
+    """
+    probabilities = np.clip(probabilities, 0, 1)
+    
     sorted_indices = np.argsort(probabilities, kind="mergesort")[::-1]
     probabilities = probabilities[sorted_indices]
     targets = targets[sorted_indices]
 
-    weight = 1.0
+    tps = np.cumsum(targets)
+    fps = np.cumsum(1 - targets)
 
-    distinct_indices = np.where(np.diff(probabilities))[0]
-    threshold_idxs = np.r_[distinct_indices, len(targets) - 1]
+    tpr = tps / tps[-1]
+    fpr = fps / fps[-1]
 
-    arr = (1 - targets) * weight
-    out = np.cumsum(arr, axis=None, dtype=np.float64)
+    thresholds = np.r_[np.inf, probabilities[np.where(np.diff(probabilities))]]
 
-    tps = out[threshold_idxs]
+    auc = np.trapz(tpr, fpr)
 
-    fps = 1 + threshold_idxs - tps
-    tps = np.r_[0, tps]
-    fps = np.r_[0, fps]
-
-    thresholds = probabilities[threshold_idxs]
-    thresholds = np.r_[np.inf, thresholds]
-
-    if fps[-1] <= 0:
-        fpr = np.repeat(np.nan, fps.shape)
-    else:
-        fpr = fps / fps[-1]
-
-    if tps[-1] <= 0:
-        tpr = np.repeat(np.nan, tps.shape)
-    else:
-        tpr = tps / tps[-1]
-
-    auc = np.trapz(fpr, tpr)
+    try:
+        auc = auc[0]
+    except:
+        auc = auc
 
     return auc, fpr, tpr, thresholds

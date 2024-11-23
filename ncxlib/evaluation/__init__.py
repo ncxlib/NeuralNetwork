@@ -10,6 +10,3 @@ KFold,
 from .roc import (
 roc_area,
 )
-from .utils import (
-split_classes,
-)

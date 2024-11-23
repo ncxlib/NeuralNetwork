@@ -28,11 +28,11 @@ from ncxlib import generators, dataloaders
 from ncxlib.util import train_test_split
 
 # Neural network imports
-from ncxlib.neuralnetwork import optimizers, losses
+from ncxlib.models.neuralnetwork import optimizers, losses
 from ncxlib.preprocessing import MinMaxScaler
-from ncxlib.neuralnetwork import NeuralNetwork, FullyConnectedLayer
-from ncxlib.neuralnetwork import activations
-from ncxlib.neuralnetwork.initializers import HeNormal, Zero
+from ncxlib.models.neuralnetwork import NeuralNetwork, FullyConnectedLayer
+from ncxlib.models.neuralnetwork import activations
+from ncxlib.initializers import HeNormal, Zero
 
 
 # ------- Generate some data using generators -------

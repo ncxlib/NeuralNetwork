@@ -12,7 +12,9 @@ def add_init_files():
 
     base_dir = os.path.abspath(os.path.dirname(__file__))
     directories = [
-        "neuralnetwork",
+        "models",
+        "models/neuralnetwork",
+        "models/classifiers",
         "datasets",
         "dataloaders",
         "preprocessing",
@@ -20,7 +22,11 @@ def add_init_files():
         "util",
         "preloaded",
         "evaluation",
-        "visualization"
+        "visualization",
+        "activations",
+        "losses",
+        "optimizers",
+        "initializers"
     ]
     directories = [f"ncxlib/{file}" for file in directories]
 
@@ -55,10 +61,11 @@ def add_init_files():
 
         update_init_files(directory)
 
-    move_layer_import_to_top("ncxlib/neuralnetwork/layers/__init__.py", "Layer")
-    move_layer_import_to_top("ncxlib/neuralnetwork/losses/__init__.py", "LossFunction")
-    move_layer_import_to_top("ncxlib/neuralnetwork/initializers/__init__.py", "Initializer")
-    move_layer_import_to_top("ncxlib/neuralnetwork/dataloaders/__init__.py", "Dataloader")
+    move_layer_import_to_top("ncxlib/models/neuralnetwork/layers/__init__.py", "Layer")
+    move_layer_import_to_top("ncxlib/losses/__init__.py", "LossFunction")
+    move_layer_import_to_top("ncxlib/initializers/__init__.py", "Initializer")
+    move_layer_import_to_top("ncxlib/models/neuralnetwork/dataloaders/__init__.py", "Dataloader")
+    move_layer_import_to_top("ncxlib/models/__init__.py", "Model")
 
 
 def fmt():
