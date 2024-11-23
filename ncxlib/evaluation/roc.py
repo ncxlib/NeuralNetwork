@@ -20,6 +20,12 @@ def roc_area(probabilities, targets):
 
     probabilities = probabilities.copy()
     targets = targets.copy()
+
+
+    if -1 in targets:
+        targets[targets == -1] = 0
+        probabilities = (probabilities + 1) / 2
+
     if probabilities.ndim == 2:
         n_classes = probabilities.shape[1]
         aucs, fprs, tprs, threshold_list = [], [], [], []
