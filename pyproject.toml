@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "ncxlib"
-version = "0.3.4"
+version = "0.3.5"
 description = "Neural Network lib for ncxlib"
 authors = [ "neelthepatel <patel.neel5@northeastern.edu>", "cwcoogan <coogan.c@northeastern.edu>",]
 readme = "README.md"
