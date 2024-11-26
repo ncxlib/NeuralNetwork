@@ -12,13 +12,11 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.9"
 numpy = ">=1.26.0, <2.1.0"
-mkinit = "^1.1.0"
 nbformat = "^5.10.4"
 tqdm = "^4.67.0"
 pandas = "^2.2.3"
 pillow = "^11.0.0"
 h5py = "^3.12.1"
-toml = "^0.10.2"
 matplotlib = "^3.9.2"
 pyvis = "^0.3.2"
 
@@ -29,8 +27,11 @@ fmt = "scripts:fmt"
 notebook = "scripts:notebook"
 deploy = "scripts:run_poetry_commands"
 
+
 [tool.poetry.group.dev.dependencies]
 black = "^24.10.0"
 jupyterlab = "^4.3.0"
 tensorflow = "^2.18.0"
 scikit-learn = "^1.5.2"
+mkinit = "^1.1.0"
+toml = "^0.10.2"
