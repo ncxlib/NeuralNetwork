@@ -27,7 +27,7 @@ class ReLU(Activation):
                 If input contains NaN or infinity values.
         """
 
-        # typecheck(x)
+        typecheck(x)
         return np.maximum(x, 0)
 
     def derivative(self, x: np.ndarray) -> np.ndarray:
