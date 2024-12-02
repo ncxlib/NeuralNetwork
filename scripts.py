@@ -8,6 +8,7 @@ import nbformat as nbf
 import toml
 from mypy import api
 
+import shutil
 
 def add_init_files():
     """

@@ -33,15 +33,20 @@ test = "scripts:test"
 coverage = "scripts:coverage"
 check-types = "scripts:check_types"
 
+
 [tool.poetry.group.dev.dependencies]
 black = "^24.10.0"
 jupyterlab = "^4.3.0"
 tensorflow = "^2.18.0"
 scikit-learn = "^1.5.2"
 mkinit = "^1.1.0"
+<<<<<<< HEAD
 toml = "^0.10.2"
 absl-py = "^2.1.0"
 pytest = "^8.3.3"
 mypy = "^1.13.0"
 isort = "^5.13.2"
 pytest-cov = "^6.0.0"
+=======
+toml = "^0.10.2"
+>>>>>>> main
