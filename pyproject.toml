@@ -37,6 +37,9 @@ check-types = "scripts:check_types"
 omit = [
     # omit anything in a .local directory anywhere
     "**/__init__.py",
+    "**/*test*",
+    "**/*plot*",
+    "**/*timer*",
     # omit everything in /usr
     "ncxlib/visualization/*",
     "ncxlib/testing/*",
