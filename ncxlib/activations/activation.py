@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 
 import numpy as np
 
+
 class Activation(ABC):
     def __init__(self):
         self.activated = None

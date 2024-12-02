@@ -1,3 +1,1 @@
-from .visualize import (
-visualize,
-)
+from .visualize import visualize

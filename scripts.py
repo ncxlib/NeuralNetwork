@@ -8,7 +8,6 @@ import nbformat as nbf
 import toml
 from mypy import api
 
-import shutil
 
 def add_init_files():
     """
@@ -288,6 +287,7 @@ def clear_cache(start_dir="."):
                 except Exception as e:
                     print(f"Failed to delete {pycache_path}: {e}")
 
+
 def clean():
     clear_cache()
     remove_all_init_files()
@@ -325,6 +325,7 @@ def test():
     if result.stderr:
         print(result.stderr, file=sys.stderr)
     sys.exit(result.returncode)
+
 
 def coverage():
     result = subprocess.run(

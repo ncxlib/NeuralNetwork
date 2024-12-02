@@ -1,15 +1,20 @@
-import numpy as np
-from ncxlib.neuralnetwork.layers import Layer
-from ncxlib.neuralnetwork.activations import Softmax
 from typing import Optional
+
+import numpy as np
+
+from ncxlib.neuralnetwork.activations import Softmax
+from ncxlib.neuralnetwork.layers import Layer
+
 
 class NaiveBayesClassifier(Layer):
     def __init__(self, name: str = " "):
-        super().__init__(None, None, activation=Softmax(), optimizer=None, loss_fn=None, name=name)
+        super().__init__(
+            None, None, activation=Softmax(), optimizer=None, loss_fn=None, name=name
+        )
         self.class_means = None
         self.class_variances = None
         self.class_priors = None
-    
+
     def fit(self, X: np.ndarray, y: np.ndarray):
         """
         Fit the Naive Bayes model by calculating class-specific means, variances, and priors.
@@ -19,7 +24,9 @@ class NaiveBayesClassifier(Layer):
         self.class_variances = {cls: X[y == cls].var(axis=0) for cls in self.classes}
         self.class_priors = {cls: np.mean(y == cls) for cls in self.classes}
 
-    def forward_propagation(self, inputs: np.ndarray, no_save: Optional[bool] = False) -> np.ndarray:
+    def forward_propagation(
+        self, inputs: np.ndarray, no_save: Optional[bool] = False
+    ) -> np.ndarray:
         """
         Compute class probabilities using Gaussian likelihood and priors.
 
@@ -38,17 +45,16 @@ class NaiveBayesClassifier(Layer):
             prior = np.log(self.class_priors[cls])
 
             # LL assuming Guassian
-            likelihood = (
-                -0.5 * np.sum(np.log(2 * np.pi * var))  
-                - 0.5 * np.sum(((inputs - mean) ** 2) / var, axis=1)  
+            likelihood = -0.5 * np.sum(np.log(2 * np.pi * var)) - 0.5 * np.sum(
+                ((inputs - mean) ** 2) / var, axis=1
             )
             likelihoods.append(prior + likelihood)
 
         log_probs = np.array(likelihoods).T
-        # probs = self.activation.apply(log_probs) 
+        # probs = self.activation.apply(log_probs)
 
         if not no_save:
-            self.activated = log_probs 
+            self.activated = log_probs
 
         return log_probs
 

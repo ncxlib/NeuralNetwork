@@ -44,6 +44,4 @@ class RelUTest(TestCase):
         x_large_negative = np.random.uniform(-1e5, -1e4, (2, 5))
         result_large_negative = ReLU().apply(x_large_negative)
         expected_large_negative = np.zeros((2, 5))
-        self.assertAllClose(
-            result_large_negative, expected_large_negative, rtol=1e-05
-        )
+        self.assertAllClose(result_large_negative, expected_large_negative, rtol=1e-05)
