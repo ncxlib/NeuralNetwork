@@ -1,5 +1,6 @@
-from ncxlib.losses import LossFunction
 import numpy as np
+
+from ncxlib.losses import LossFunction
 
 
 class HingeLoss(LossFunction):

@@ -1,9 +1,12 @@
-import numpy as np
 from typing import Optional
-from ncxlib.models import Model
+
+import numpy as np
+
 from ncxlib.activations import Activation, Softmax
-from ncxlib.optimizers import Optimizer, SGD
-from ncxlib.losses import LossFunction, BinaryCrossEntropy
+from ncxlib.losses import BinaryCrossEntropy, LossFunction
+from ncxlib.models import Model
+from ncxlib.optimizers import SGD, Optimizer
+
 
 class NaiveBayesClassifier(Model):
     def __init__(
@@ -37,7 +40,9 @@ class NaiveBayesClassifier(Model):
         self.class_variances = {cls: X[y == cls].var(axis=0) for cls in self.classes}
         self.class_priors = {cls: np.mean(y == cls) for cls in self.classes}
 
-    def forward_propagation(self, inputs: np.ndarray, no_save: Optional[bool] = False) -> np.ndarray:
+    def forward_propagation(
+        self, inputs: np.ndarray, no_save: Optional[bool] = False
+    ) -> np.ndarray:
         likelihoods = []
 
         for cls in self.classes:
@@ -45,19 +50,18 @@ class NaiveBayesClassifier(Model):
             var = np.clip(self.class_variances[cls], a_min=1e-6, a_max=None)
             prior = np.log(self.class_priors[cls])
 
-            likelihood = (
-                -0.5 * np.sum(np.log(2 * np.pi * var))
-                - 0.5 * np.sum(((inputs - mean) ** 2) / var, axis=1)
+            likelihood = -0.5 * np.sum(np.log(2 * np.pi * var)) - 0.5 * np.sum(
+                ((inputs - mean) ** 2) / var, axis=1
             )
             likelihoods.append(prior + likelihood)
 
         log_probs = np.array(likelihoods).T
 
         if not no_save:
-            self.activated = log_probs 
+            self.activated = log_probs
 
         return log_probs
-    
+
     def predict(self, X: np.ndarray, multiple: Optional[bool] = True) -> np.ndarray:
         log_probs = self.forward_propagation(X)
         probabilities = self.activation.apply(log_probs)

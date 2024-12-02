@@ -1,10 +1,12 @@
 from abc import ABC, abstractmethod
 from typing import Callable, Optional
+
 import numpy as np
+
+from ncxlib.activations import Activation, ReLU
+from ncxlib.initializers import HeNormal, Initializer, Zero
+from ncxlib.losses import LossFunction, MeanSquaredError
 from ncxlib.optimizers import SGD, Optimizer
-from ncxlib.activations import ReLU, Activation
-from ncxlib.losses import MeanSquaredError, LossFunction
-from ncxlib.initializers import Initializer, HeNormal, Zero
 
 
 class Layer(ABC):
@@ -18,7 +20,7 @@ class Layer(ABC):
         initializer: Optional[Initializer] = HeNormal(),
         weights_initializer: Optional[Initializer] = HeNormal(),
         bias_initializer: Optional[Initializer] = Zero(),
-        name: str = ""
+        name: str = "",
     ):
         if not Callable:
             raise ValueError(
@@ -33,18 +35,20 @@ class Layer(ABC):
         self.loss_fn = loss_fn
         self.name = name
 
-        self.weights_initializer = weights_initializer if weights_initializer else initializer
+        self.weights_initializer = (
+            weights_initializer if weights_initializer else initializer
+        )
         self.bias_initializer = bias_initializer if bias_initializer else initializer
 
         # inputs remain same for all so just store in batch_size x n_inputs
         self.inputs = None
 
         # weights size:  n_neurons * n_inputs
-        self.W = None  
+        self.W = None
         self.old_W = None
 
         # bias size : n_neurons x 1
-        self.b = None 
+        self.b = None
 
         # weighted sums size: batch_size x n_neurons
         self.z = None
@@ -56,7 +60,7 @@ class Layer(ABC):
         self.activated = None
 
     def initialize_params(self, inputs: np.ndarray):
-        # inputs always get updated 
+        # inputs always get updated
         self.inputs = inputs
 
         # only initialize if not initialized yet, if not use previously learned values
@@ -65,7 +69,9 @@ class Layer(ABC):
             self.b = self.bias_initializer.gen_b(self.n_neurons)
 
     @abstractmethod
-    def forward_propagation(self, inputs: np.ndarray, no_save: Optional[bool] = False) -> np.ndarray:
+    def forward_propagation(
+        self, inputs: np.ndarray, no_save: Optional[bool] = False
+    ) -> np.ndarray:
         pass
 
     @abstractmethod

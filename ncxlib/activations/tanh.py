@@ -1,6 +1,7 @@
+import numpy as np
+
 from ncxlib.activations.activation import Activation
 from ncxlib.util.check import typecheck
-import numpy as np
 
 
 class Tanh(Activation):
@@ -44,4 +45,4 @@ class Tanh(Activation):
             Numpy array with the tanh derivative applied element-wise.
         """
         self.activated = self.apply(x)
-        return 1 - self.activated ** 2
+        return 1 - self.activated**2

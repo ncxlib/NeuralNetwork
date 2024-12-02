@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 
+
 def plot_roc_curve(fpr, tpr, auc):
     # print(fpr, tpr, auc)
     plt.figure(figsize=(8, 6))
@@ -14,6 +15,7 @@ def plot_roc_curve(fpr, tpr, auc):
     plt.grid(alpha=0.4)
     plt.show()
 
+
 def plot_2d(X, Y, title="Data Plot", alpha=0.6):
     """
     Plot 2D data points with labels.
@@ -25,10 +27,10 @@ def plot_2d(X, Y, title="Data Plot", alpha=0.6):
     - alpha: float, transparency of the scatter points.
     """
     plt.scatter(X[Y == 0][:, 0], X[Y == 0][:, 1], label="Class 0", alpha=alpha)
-    
+
     plt.scatter(X[Y == 1][:, 0], X[Y == 1][:, 1], label="Class 1", alpha=alpha)
-    
+
     plt.legend()
     plt.title(title)
-    
+
     plt.show()

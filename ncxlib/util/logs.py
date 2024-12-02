@@ -1,4 +1,5 @@
-LOG=False
+LOG = False
+
 
 def log(*args, **kwargs):
     bypass = kwargs.get("bypass")

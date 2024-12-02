@@ -1,5 +1,7 @@
 import numpy as np
+
 from ncxlib.util import split_classes
+
 
 def roc_area(probabilities, targets):
     """
@@ -21,7 +23,6 @@ def roc_area(probabilities, targets):
     probabilities = probabilities.copy()
     targets = targets.copy()
 
-
     if -1 in targets:
         targets[targets == -1] = 0
         probabilities = (probabilities + 1) / 2
@@ -33,7 +34,9 @@ def roc_area(probabilities, targets):
             binary_targets = (targets == class_idx).astype(int)
             class_probabilities = probabilities[:, class_idx]
 
-            auc, fpr, tpr, thresholds = _binary_roc_area(class_probabilities, binary_targets)
+            auc, fpr, tpr, thresholds = _binary_roc_area(
+                class_probabilities, binary_targets
+            )
             aucs.append(auc)
             fprs.append(fpr)
             tprs.append(tpr)
@@ -43,12 +46,13 @@ def roc_area(probabilities, targets):
     else:
         return _binary_roc_area(probabilities, targets)
 
+
 def _binary_roc_area(probabilities, targets):
     """
     Compute AUC, FPR, TPR, and thresholds for binary classification.
     """
     probabilities = np.clip(probabilities, 0, 1)
-    
+
     sorted_indices = np.argsort(probabilities, kind="mergesort")[::-1]
     probabilities = probabilities[sorted_indices]
     targets = targets[sorted_indices]

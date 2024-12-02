@@ -1,5 +1,7 @@
-from ncxlib.losses.lossfunction import LossFunction
 import numpy as np
+
+from ncxlib.losses.lossfunction import LossFunction
+
 
 class CategoricalCrossEntropy(LossFunction):
     @staticmethod
@@ -15,8 +17,8 @@ class CategoricalCrossEntropy(LossFunction):
           float: Mean categorical cross-entropy loss.
         """
         epsilon = 1e-12
-        y_pred = np.clip(y_pred, epsilon, 1. - epsilon)
-        return -np.sum(y_true * np.log(y_pred)) / y_true.shape[0] 
+        y_pred = np.clip(y_pred, epsilon, 1.0 - epsilon)
+        return -np.sum(y_true * np.log(y_pred)) / y_true.shape[0]
 
     @staticmethod
     def compute_gradient(y_true: np.ndarray, y_pred: np.ndarray) -> np.ndarray:
@@ -31,7 +33,5 @@ class CategoricalCrossEntropy(LossFunction):
           np.ndarray: Gradient of the loss.
         """
         epsilon = 1e-12
-        y_pred = np.clip(y_pred, epsilon, 1. - epsilon) 
+        y_pred = np.clip(y_pred, epsilon, 1.0 - epsilon)
         return -y_true / y_pred
-
-

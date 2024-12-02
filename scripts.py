@@ -1,8 +1,13 @@
-import subprocess
+import glob
 import os
+import shutil
+import subprocess
+import sys
+
 import nbformat as nbf
 import toml
-import shutil
+from mypy import api
+
 
 def add_init_files():
     """
@@ -27,15 +32,13 @@ def add_init_files():
         "activations",
         "losses",
         "optimizers",
-        "initializers"
+        "initializers",
+        "testing",
     ]
     directories = [f"ncxlib/{file}" for file in directories]
 
-
-
     for directory in directories:
         target_dir = os.path.join(base_dir, directory)
-
         for root, dirs, files in os.walk(target_dir):
             init_file = os.path.join(root, "__init__.py")
             if not os.path.exists(init_file):
@@ -65,7 +68,9 @@ def add_init_files():
     move_layer_import_to_top("ncxlib/models/neuralnetwork/layers/__init__.py", "Layer")
     move_layer_import_to_top("ncxlib/losses/__init__.py", "LossFunction")
     move_layer_import_to_top("ncxlib/initializers/__init__.py", "Initializer")
-    move_layer_import_to_top("ncxlib/models/neuralnetwork/dataloaders/__init__.py", "Dataloader")
+    move_layer_import_to_top(
+        "ncxlib/models/neuralnetwork/dataloaders/__init__.py", "Dataloader"
+    )
     move_layer_import_to_top("ncxlib/models/__init__.py", "Model")
 
 
@@ -74,6 +79,7 @@ def fmt():
     Runs the Black formatter on the entire project directory.
     """
     subprocess.run(["black", "."])
+    subprocess.run(["isort", "."])
 
 
 def remove_all_init_files():
@@ -223,7 +229,7 @@ def move_layer_import_to_top(init_path, module_name):
 
 
 def increment_pypi_version(version):
-    major, minor, patch = map(int, version.split('.'))
+    major, minor, patch = map(int, version.split("."))
     if patch < 9:
         patch += 1
     else:
@@ -248,10 +254,12 @@ def update_version_in_pyproject():
         toml.dump(pyproject, file)
     print(f"Version updated from {current_version} to {new_version}")
 
+
 def remove_poetry_lock():
     if os.path.exists("poetry.lock"):
         os.remove("poetry.lock")
         print("poetry.lock file removed.")
+
 
 def run_poetry_commands():
     remove_poetry_lock()
@@ -261,7 +269,8 @@ def run_poetry_commands():
     subprocess.run(["poetry", "run", "gen"], check=True)
     subprocess.run(["poetry", "publish", "--build"], check=True)
 
-def clear_cache(start_dir='.'):
+
+def clear_cache(start_dir="."):
     """
     Recursively delete all __pycache__ folders and their contents
     from the given directory and its subdirectories.
@@ -270,7 +279,7 @@ def clear_cache(start_dir='.'):
     """
     for root, dirs, files in os.walk(start_dir):
         for dir_name in dirs:
-            if dir_name == '__pycache__':
+            if dir_name == "__pycache__":
                 pycache_path = os.path.join(root, dir_name)
                 try:
                     shutil.rmtree(pycache_path)
@@ -278,7 +287,51 @@ def clear_cache(start_dir='.'):
                 except Exception as e:
                     print(f"Failed to delete {pycache_path}: {e}")
 
-
 def clean():
     clear_cache()
     remove_all_init_files()
+
+
+def check_types():
+    result = api.run(["."])
+    if result[0]:
+        print(result[0])
+    if result[1]:
+        print(result[1], file=sys.stderr)
+    if result[2]:
+        sys.exit(result[2])
+
+
+def test():
+    args = sys.argv[1:]
+    if not args:
+        args = ["."]
+    else:
+        partial_name = args[0]
+        matching_files = glob.glob(f"**/*{partial_name}*.py", recursive=True)
+        if matching_files:
+            args = matching_files
+        else:
+            print(f"No matching test files found for '{partial_name}'")
+            sys.exit(1)
+
+    result = subprocess.run(
+        ["pytest", *args, "--maxfail=1", "--disable-warnings"],
+        capture_output=True,
+        text=True,
+    )
+    print(result.stdout)
+    if result.stderr:
+        print(result.stderr, file=sys.stderr)
+    sys.exit(result.returncode)
+
+def coverage():
+    result = subprocess.run(
+        ["pytest", "--cov=ncxlib"],
+        capture_output=True,
+        text=True,
+    )
+    print(result.stdout)
+    if result.stderr:
+        print(result.stderr, file=sys.stderr)
+    sys.exit(result.returncode)

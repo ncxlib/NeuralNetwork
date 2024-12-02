@@ -1,6 +1,7 @@
+import numpy as np
+
 from ncxlib.activations.activation import Activation
 from ncxlib.util.check import typecheck
-import numpy as np
 
 
 class Sigmoid(Activation):
@@ -45,7 +46,6 @@ class Sigmoid(Activation):
         np.ndarray
             Numpy array with the sigmoid derivative applied element-wise.
         """
-
 
         self.activated = self.apply(x)
         return self.activated * (1 - self.activated)

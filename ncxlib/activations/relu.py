@@ -1,6 +1,7 @@
+import numpy as np
+
 from ncxlib.activations import Activation
 from ncxlib.util.check import typecheck
-import numpy as np
 
 
 class ReLU(Activation):

@@ -1,5 +1,6 @@
-from ncxlib.datasets.dataset import Dataset
 import pandas as pd
+
+from ncxlib.datasets.dataset import Dataset
 
 
 class CSVDataset(Dataset):

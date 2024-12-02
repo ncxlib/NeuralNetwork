@@ -1,5 +1,6 @@
 import time
 
+
 def timer(func):
     def wrapper(*args, **kwargs):
         start = time.time()
@@ -10,7 +11,9 @@ def timer(func):
             print(f"**Time: {func.__name__} - {(elapsed_time) * 1000:.2f}ms")
         else:
             print(f"**Time: {func.__name__} - {elapsed_time:.2f}s")
+
     return wrapper
+
 
 def show_time(_time, name, level=1):
     padding = "\t" * level
@@ -18,6 +21,7 @@ def show_time(_time, name, level=1):
         print(f"{padding}**Time: {name} - {(_time) * 1000:.2f}ms")
     else:
         print(f"{padding}**Time: {name} - {_time:.2f}s")
+
 
 def time_this(func, *args, **kwargs):
     start = time.time()

@@ -1,5 +1,6 @@
-import pandas as pd
 import numpy as np
+import pandas as pd
+
 
 def generate_training_data(
     num_samples=1000,
@@ -13,7 +14,7 @@ def generate_training_data(
 ):
     """
     Generates structured data for neural network training with labels 1/0 or 1/-1.
-    The data will have a pattern where positive and negative samples are 
+    The data will have a pattern where positive and negative samples are
     separated into clusters.
 
     Parameters:
@@ -65,7 +66,10 @@ def generate_training_data(
 
     return X, y
 
-def generate_cartesian_uniform_data(x_range, y_range, num_samples=100, random_seed=None): 
+
+def generate_cartesian_uniform_data(
+    x_range, y_range, num_samples=100, random_seed=None
+):
     if not random_seed:
         np.random.seed(random_seed)
 
@@ -74,10 +78,11 @@ def generate_cartesian_uniform_data(x_range, y_range, num_samples=100, random_se
 
     return np.column_stack((x, y))
 
-    
 
-def _assign_labels(points, regions, p_positive_inside=0.99, p_positive_outside=0.03, random_seed=None):
-  
+def _assign_labels(
+    points, regions, p_positive_inside=0.99, p_positive_outside=0.03, random_seed=None
+):
+
     if random_seed is not None:
         np.random.seed(random_seed)
 
@@ -94,7 +99,17 @@ def _assign_labels(points, regions, p_positive_inside=0.99, p_positive_outside=0
 
     return np.array(labels)
 
-def generate_labeled_data_with_regions(n, x_range, y_range, regions, p_positive_inside=0.99, p_positive_outside=0.03, normalize=False, random_seed=None):
+
+def generate_labeled_data_with_regions(
+    n,
+    x_range,
+    y_range,
+    regions,
+    p_positive_inside=0.99,
+    p_positive_outside=0.03,
+    normalize=False,
+    random_seed=None,
+):
     """
     Generates labeled data for classification tasks.
 
@@ -112,28 +127,35 @@ def generate_labeled_data_with_regions(n, x_range, y_range, regions, p_positive_
     - np.ndarray: Feature matrix of shape (n, 2).
     - np.ndarray: Label vector of shape (n,).
     """
-    points = generate_cartesian_uniform_data(x_range, y_range, num_samples=n, random_seed=random_seed)
-    labels = _assign_labels(points, regions, p_positive_inside, p_positive_outside, random_seed)
+    points = generate_cartesian_uniform_data(
+        x_range, y_range, num_samples=n, random_seed=random_seed
+    )
+    labels = _assign_labels(
+        points, regions, p_positive_inside, p_positive_outside, random_seed
+    )
 
     if normalize:
         points = (points - np.mean(points, axis=0)) / np.std(points, axis=0)
 
     return points, labels
 
+
 def generate_fine_grid_data(x_range, y_range, regions, grid_size=100):
     x1 = np.linspace(x_range[0], x_range[1], grid_size)
     x2 = np.linspace(y_range[0], y_range[1], grid_size)
-    
+
     X1, X2 = np.meshgrid(x1, x2)
-    
+
     grid = np.c_[X1.ravel(), X2.ravel()]
-    
+
     true_labels = _assign_labels(grid, regions)
-    
+
     return grid, true_labels
+
 
 def sample_from_gaussian(mean, cov, n_samples):
     return np.random.multivariate_normal(mean, cov, n_samples)
+
 
 def sample_from_mixture(weights, means, covariances, n_samples):
     components = np.random.choice(len(weights), size=n_samples, p=weights)
@@ -143,9 +165,12 @@ def sample_from_mixture(weights, means, covariances, n_samples):
         samples.append(sample)
     return np.vstack(samples)
 
-def generate_from_guassian_mixures(n_samples, P_Y_0, P_Y_1, mu_0, sigma_0, w_0, mu_1, sigma_1, w_1):
+
+def generate_from_guassian_mixures(
+    n_samples, P_Y_0, P_Y_1, mu_0, sigma_0, w_0, mu_1, sigma_1, w_1
+):
     labels = np.random.choice([0, 1], size=n_samples, p=[P_Y_0, P_Y_1])
-    
+
     data = []
     for label in labels:
         if label == 0:
@@ -153,5 +178,5 @@ def generate_from_guassian_mixures(n_samples, P_Y_0, P_Y_1, mu_0, sigma_0, w_0, 
         else:
             sample = sample_from_mixture(w_1, mu_1, sigma_1, 1)
         data.append(sample)
-    
+
     return np.vstack(data), labels

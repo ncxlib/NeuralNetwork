@@ -1,13 +1,16 @@
-from ncxlib.models.neuralnetwork.layers.layer import Layer
-import numpy as np
 from typing import Optional
-from ncxlib.util import log
-from ncxlib.optimizers.optimizer import Optimizer
-from ncxlib.optimizers.sgd import SGD
+
+import numpy as np
+
 from ncxlib.activations.activation import Activation
 from ncxlib.activations.relu import ReLU
+from ncxlib.initializers import HeNormal, Initializer, Zero
 from ncxlib.losses import LossFunction, MeanSquaredError
-from ncxlib.initializers import Initializer, HeNormal, Zero
+from ncxlib.models.neuralnetwork.layers.layer import Layer
+from ncxlib.optimizers.optimizer import Optimizer
+from ncxlib.optimizers.sgd import SGD
+from ncxlib.util import log
+
 
 class FullyConnectedLayer(Layer):
     def __init__(
@@ -20,11 +23,13 @@ class FullyConnectedLayer(Layer):
         initializer: Optional[Initializer] = HeNormal(),
         weights_initializer: Optional[Initializer] = HeNormal(),
         bias_initializer: Optional[Initializer] = Zero(),
-        name: Optional[str] = ""
+        name: Optional[str] = "",
     ):
         super().__init__(n_neurons, n_inputs, activation, optimizer, loss_fn, name=name)
 
-    def forward_propagation(self, inputs: np.ndarray, no_save: Optional[bool] = False) -> tuple[np.ndarray, int]:
+    def forward_propagation(
+        self, inputs: np.ndarray, no_save: Optional[bool] = False
+    ) -> tuple[np.ndarray, int]:
         """
         inputs:
             An array of features (should be a numpy array)
@@ -36,14 +41,14 @@ class FullyConnectedLayer(Layer):
             Performs forward propagation by calculating the weighted sum for each neuron
         and applying the activation function
         """
-       
+
         self.initialize_params(inputs)
 
         # calculate weighted sum: X W' + b (broadcast b automatic with numpy)
         weighted_sum = np.dot(self.inputs, self.W.T) + self.b.T
 
         # activate each neuron with self.activation function
-        activated =  self.activation.apply(weighted_sum)
+        activated = self.activation.apply(weighted_sum)
 
         # if saving: (bad var name i guess)
         if not no_save:
@@ -51,10 +56,10 @@ class FullyConnectedLayer(Layer):
             self.activated = activated
 
         return activated
-    
+
     def back_propagation(self, next_layer: Layer, learning_rate: float) -> np.ndarray:
 
-        da_dz = self.activation.derivative(self.z) 
+        da_dz = self.activation.derivative(self.z)
 
         dl_da = next_layer.gradients @ next_layer.old_W
 

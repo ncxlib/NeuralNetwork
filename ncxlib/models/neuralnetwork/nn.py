@@ -1,30 +1,41 @@
+import uuid
 from typing import Optional
+
+import h5py
 import numpy as np
 from tqdm import tqdm
-from ncxlib.models.neuralnetwork.layers import Layer, InputLayer, OutputLayer
-from ncxlib.losses import LossFunction, MeanSquaredError, BinaryCrossEntropy, CategoricalCrossEntropy
-from ncxlib.activations import ReLU, Sigmoid, Softmax, LeakyReLU, Tanh
-from ncxlib.util import log, timer, show_time, time_this
-from ncxlib.models.neuralnetwork.layers import FullyConnectedLayer
-from ncxlib.models import Model 
-import h5py, uuid
+
+from ncxlib.activations import LeakyReLU, ReLU, Sigmoid, Softmax, Tanh
+from ncxlib.losses import (BinaryCrossEntropy, CategoricalCrossEntropy,
+                           LossFunction, MeanSquaredError)
+from ncxlib.models import Model
+from ncxlib.models.neuralnetwork.layers import (FullyConnectedLayer,
+                                                InputLayer, Layer, OutputLayer)
+from ncxlib.util import log, show_time, time_this, timer
 
 
 class NeuralNetwork(Model):
-    def __init__(self, layers: Optional[list[Layer]] = [], loss_fn: Optional[LossFunction] = MeanSquaredError):
-        
+    def __init__(
+        self,
+        layers: Optional[list[Layer]] = [],
+        loss_fn: Optional[LossFunction] = MeanSquaredError,
+    ):
+
         super().__init__(loss_fn)
         self.layers = layers
         self.compiled = False
 
-    def _compile(self, X: np.ndarray, targets: np.ndarray, learning_rate: float) -> None:
+    def _compile(
+        self, X: np.ndarray, targets: np.ndarray, learning_rate: float
+    ) -> None:
         self.compiled = True
 
         try:
             targets = targets.astype(np.uint)
         except:
-            raise ValueError("Labels should be of integer type, if they are categorical, please use OneHotEncoder Preprocessor")
-            
+            raise ValueError(
+                "Labels should be of integer type, if they are categorical, please use OneHotEncoder Preprocessor"
+            )
 
         self.layers = [InputLayer(n_neurons=X.shape[1], n_inputs=1)] + self.layers
 
@@ -34,7 +45,7 @@ class NeuralNetwork(Model):
                 raise ValueError(
                     "The inputs for a layer should match the number of neuron outputs of the previous layer."
                 )
-                
+
             if not layer.n_inputs:
                 layer.n_inputs = previous_outputs
 
@@ -42,9 +53,8 @@ class NeuralNetwork(Model):
 
             layer.activation = layer.activation()
 
-        self.output_layer = OutputLayer(layer=self.layers[-1], loss_fn = self.loss_fn)
+        self.output_layer = OutputLayer(layer=self.layers[-1], loss_fn=self.loss_fn)
         self.layers[-1].activation = self.output_layer.activation
-
 
     def add_layer(self, layer):
         self.layers.append(layer)
@@ -53,7 +63,7 @@ class NeuralNetwork(Model):
         for layer in self.layers[1:]:
             inputs_vector = layer.forward_propagation(inputs_vector)
         return inputs_vector
-    
+
     def forward_propagate_all_no_save(self, input_vector):
         for layer in self.layers[1:]:
             input_vector = layer.forward_propagation(input_vector, no_save=True)
@@ -61,15 +71,13 @@ class NeuralNetwork(Model):
 
     def back_propagation(self, y_true, learning_rate) -> None:
         next_layer = self.output_layer.layer
-        
-        self.output_layer.back_propagation(
-                    y_true, learning_rate
-                )
-        
+
+        self.output_layer.back_propagation(y_true, learning_rate)
+
         for layer in reversed(self.layers[1:-1]):
             layer.back_propagation(next_layer, learning_rate)
             next_layer = layer
-        
+
     def train(
         self,
         inputs: np.ndarray,
@@ -89,7 +97,7 @@ class NeuralNetwork(Model):
 
         for epoch in progress:
             progress.set_description(f"Epoch: {epoch} | Loss: {loss}")
-            
+
             total_loss = 0
 
             if shuffle:
@@ -100,8 +108,8 @@ class NeuralNetwork(Model):
 
             for i in range(0, len(inputs), batch_size):
 
-                X_batch = inputs[i:i + batch_size]
-                y_batch = targets[i:i + batch_size]
+                X_batch = inputs[i : i + batch_size]
+                y_batch = targets[i : i + batch_size]
                 y_true = y_batch.reshape((len(y_batch), 1))
 
                 if self.layers[-1].n_neurons > 1:
@@ -119,7 +127,6 @@ class NeuralNetwork(Model):
 
             # Compute average loss for the epoch
             loss = total_loss / len(inputs)
-        
 
     def predict(self, inputs: np.ndarray, multiple=True):
         """
@@ -142,27 +149,31 @@ class NeuralNetwork(Model):
             # assumes -1, 1 labels
             if min(activations) < 0:
                 predictions = [1 if p >= 0 else -1 for p in activations]
-            
+
             # assumes 0, 1 labels
             else:
                 predictions = [1 if p >= 0.5 else 0 for p in activations]
 
-        else: 
+        else:
             predictions = [np.argmax(p) for p in activations]
 
-        
-        probabilities = np.array([a[0][0] if self.layers[-1].n_neurons == 1 else a[0] for a in activations])
-        return (predictions, probabilities) if multiple else (predictions[0], probabilities[0])
+        probabilities = np.array(
+            [a[0][0] if self.layers[-1].n_neurons == 1 else a[0] for a in activations]
+        )
+        return (
+            (predictions, probabilities)
+            if multiple
+            else (predictions[0], probabilities[0])
+        )
 
-                
     def save_model(self, filepath):
-        '''
-        Function: 
+        """
+        Function:
             Saves the model as a .h5 file that stores each layers neurons, weights, bias, loss fn and
             activation function.
 
             ** Note: Do not add .h5 to the end of your filepath. This will be added automatically.
-        '''
+        """
         filename = str(uuid.uuid4().hex) + ".h5"
         final_path = filepath + "/" + filename
 
@@ -170,26 +181,31 @@ class NeuralNetwork(Model):
             final_path = ".." + filepath + "/" + filename
         elif not final_path.startswith("../"):
             final_path = "../" + filepath + "/" + filename
-        
-        with h5py.File(final_path, 'w') as f:
-            loss_fn_name = self.loss_fn.__name__ if hasattr(self.loss_fn, '__name__') else self.loss_fn.__class__.__name__
-            f.attrs['loss_function'] = loss_fn_name
-            f.attrs['num_layers'] = len(self.layers)
+
+        with h5py.File(final_path, "w") as f:
+            loss_fn_name = (
+                self.loss_fn.__name__
+                if hasattr(self.loss_fn, "__name__")
+                else self.loss_fn.__class__.__name__
+            )
+            f.attrs["loss_function"] = loss_fn_name
+            f.attrs["num_layers"] = len(self.layers)
 
             for i, layer in enumerate(self.layers):
                 if layer.W is not None and layer.b is not None:
                     f.create_dataset(f"layer_{i}_weights", data=layer.W)
                     f.create_dataset(f"layer_{i}_bias", data=layer.b)
-                    f.attrs[f"layer_{i}_activation"] = layer.activation.__class__.__name__
+                    f.attrs[f"layer_{i}_activation"] = (
+                        layer.activation.__class__.__name__
+                    )
                 else:
-                    print(f"Skipping layer {i} as it has no weights or biases")  
+                    print(f"Skipping layer {i} as it has no weights or biases")
 
         print(f"Model saved to {final_path}")
 
-    
     @classmethod
     def load_model(cls, filepath):
-        
+
         # TODO: Get rid of these lookup maps and add a _registry in LossFunction
         loss_fn_lookup = {
             "BinaryCrossEntropy": BinaryCrossEntropy,
@@ -201,26 +217,28 @@ class NeuralNetwork(Model):
             "ReLU": ReLU,
             "Softmax": Softmax,
             "tanh": Tanh,
-            "LeakyReLU": LeakyReLU, 
+            "LeakyReLU": LeakyReLU,
         }
 
-        with h5py.File(filepath, 'r') as f:
-            loss_fn_name = f.attrs['loss_function']
+        with h5py.File(filepath, "r") as f:
+            loss_fn_name = f.attrs["loss_function"]
             loss_fn_class = loss_fn_lookup.get(loss_fn_name)
 
             if loss_fn_class is None:
                 raise ValueError(f"loss fn {loss_fn_name} not found")
-            
+
             model = cls(loss_fn=loss_fn_class())
-            num_layers = f.attrs['num_layers']
+            num_layers = f.attrs["num_layers"]
 
             for i in range(1, num_layers):
                 activation_fn_name = f.attrs.get(f"layer_{i}_activation")
                 activation_fn_class = activation_fn_lookup.get(activation_fn_name)
 
                 if activation_fn_class is None:
-                    raise ValueError(f"Activation function '{activation_fn_name}' not found in lookup dictionary")
-                
+                    raise ValueError(
+                        f"Activation function '{activation_fn_name}' not found in lookup dictionary"
+                    )
+
                 weights = f[f"layer_{i}_weights"][:]
                 biases = f[f"layer_{i}_bias"][:]
                 n_neurons, n_inputs = weights.shape
@@ -228,16 +246,15 @@ class NeuralNetwork(Model):
                 layer = FullyConnectedLayer(
                     n_inputs=n_inputs,
                     n_neurons=n_neurons,
-                    activation=activation_fn_class()
+                    activation=activation_fn_class(),
                 )
                 layer.W = weights
                 layer.b = biases
                 model.layers.append(layer)
-            
+
             print(f"model loaded from {filepath}")
             return model
 
-    
     # verify final wts/bias against saved models wts/bias
     def print_final_weights_biases(self):
         print("Final Weights and Biases After Training:")
@@ -248,7 +265,3 @@ class NeuralNetwork(Model):
                 print(f"  Bias:\n{layer.b}")
             else:
                 print(f"Layer {i} has no weights or biases")
-
-
-
-   

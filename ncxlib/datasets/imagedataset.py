@@ -1,8 +1,10 @@
-from ncxlib.datasets.dataset import Dataset
 import os
-from PIL import Image
-import pandas as pd
+
 import numpy as np
+import pandas as pd
+from PIL import Image
+
+from ncxlib.datasets.dataset import Dataset
 
 
 class ImageDataset(Dataset):
@@ -23,7 +25,13 @@ class ImageDataset(Dataset):
                     pixels = self.get_all_pixels(image)
                     pixels = np.array(image).reshape(-1, 3)
                     target = int(label) if self.label_numeric else label
-                    data.append({"title": str(image_name), "data": np.array(pixels), "target": target})
+                    data.append(
+                        {
+                            "title": str(image_name),
+                            "data": np.array(pixels),
+                            "target": target,
+                        }
+                    )
 
         self.data = pd.DataFrame(data, dtype=object)
         self.data["title"] = self.data["title"].astype("string")

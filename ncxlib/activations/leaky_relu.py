@@ -1,6 +1,8 @@
+import numpy as np
+
 from ncxlib.activations.activation import Activation
 from ncxlib.util.check import typecheck
-import numpy as np
+
 
 class LeakyReLU(Activation):
     def __init__(self, alpha: float = 0.01):
@@ -51,5 +53,4 @@ class LeakyReLU(Activation):
             Numpy array with the Leaky ReLU derivative applied element-wise.
         """
 
-        
         return np.array([xi * self.alpha if xi < 0 else xi for xi in x])

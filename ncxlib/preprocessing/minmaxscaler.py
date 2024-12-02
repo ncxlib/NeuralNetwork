@@ -1,5 +1,6 @@
-from ncxlib.datasets import Dataset
 import numpy as np
+
+from ncxlib.datasets import Dataset
 from ncxlib.preprocessing import Scaler
 
 
@@ -22,7 +23,10 @@ class MinMaxScaler(Scaler):
         for col in array_data.columns:
             scaled_column = []
             for x in data[col].tolist():
-                if (not self.is_numeric_array(x) and col != "data") or col in ["target", "title"]: 
+                if (not self.is_numeric_array(x) and col != "data") or col in [
+                    "target",
+                    "title",
+                ]:
                     skip_col = True
                     break
                 x_array = np.array(x)
@@ -52,12 +56,13 @@ class MinMaxScaler(Scaler):
 
                 scaled_column.append(scaled_array)
 
-            if skip_col: continue
+            if skip_col:
+                continue
             data[col] = scaled_column
 
         dataset.data = data
         return dataset
-    
+
     def is_numeric_array(self, data):
         """Checks if the data is a numeric type or a list/array of numeric types.
 

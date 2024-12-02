@@ -7,6 +7,9 @@ LeakyReLU,
 from .relu import (
 ReLU,
 )
+from .relu_test import (
+RelUTest,
+)
 from .sigmoid import (
 Sigmoid,
 )

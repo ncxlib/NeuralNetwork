@@ -1,5 +1,6 @@
-from ncxlib.optimizers.optimizer import Optimizer
 import numpy as np
+
+from ncxlib.optimizers.optimizer import Optimizer
 
 
 class SGD(Optimizer):
@@ -16,7 +17,9 @@ class SGD(Optimizer):
     def __init__(self, learning_rate=0.01):
         super().__init__(learning_rate)
 
-    def apply(self, W: np.ndarray, dl_dw: np.ndarray, b: np.ndarray, dl_db: np.ndarray) -> tuple[np.ndarray]:
+    def apply(
+        self, W: np.ndarray, dl_dw: np.ndarray, b: np.ndarray, dl_db: np.ndarray
+    ) -> tuple[np.ndarray]:
 
         W -= self.learning_rate * dl_dw
         b -= self.learning_rate * dl_db
