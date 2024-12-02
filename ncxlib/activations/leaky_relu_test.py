@@ -29,7 +29,6 @@ class LeakyRelUTest(TestCase):
         expected = 0.3 * negative_values
         self.assertAllClose(result, expected, rtol=1e-05)
 
-
     # Derivative Tests
     def test_derivative_positive_value(self):
         positive_values = np.random.random((2, 5))

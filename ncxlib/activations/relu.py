@@ -29,7 +29,7 @@ class ReLU(Activation):
         """
 
         typecheck(x)
-        return np.maximum(x, 0)
+        return np.maximum(x, np.zeros_like(x))
 
     def derivative(self, x: np.ndarray) -> np.ndarray:
         """
@@ -45,4 +45,6 @@ class ReLU(Activation):
             Numpy array with the sigmoid derivative applied element-wise.
         """
 
-        return np.where(x > 0, 1, 0)[0]
+        dx = np.ones_like(x)
+        dx[x < 0] = 0
+        return dx

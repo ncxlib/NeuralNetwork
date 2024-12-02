@@ -55,6 +55,5 @@ class LeakyReLU(Activation):
         """
 
         dx = np.ones_like(x)
-        print(dx.shape)
         dx[x < 0] = self.alpha
         return dx

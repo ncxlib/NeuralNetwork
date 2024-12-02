@@ -33,6 +33,14 @@ test = "scripts:test"
 coverage = "scripts:coverage"
 check-types = "scripts:check_types"
 
+[tool.coverage.run]
+omit = [
+    # omit anything in a .local directory anywhere
+    "**/__init__.py",
+    # omit everything in /usr
+    "ncxlib/visualization/*",
+    "ncxlib/testing/*",
+    ]
 
 [tool.poetry.group.dev.dependencies]
 black = "^24.10.0"

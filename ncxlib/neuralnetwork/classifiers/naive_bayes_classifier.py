@@ -1,7 +1,6 @@
 from typing import Optional
 
 import numpy as np
-
 from ncxlib.neuralnetwork.activations import Softmax
 from ncxlib.neuralnetwork.layers import Layer
 

@@ -1,8 +1,8 @@
 from typing import Callable
 
 import numpy as np
-
 from ncxlib.neuralnetwork.activations import Sigmoid
+
 from ncxlib.neuralnetwork.classifiers import Classifier
 
 
