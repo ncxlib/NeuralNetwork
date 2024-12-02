@@ -45,4 +45,4 @@ class ReLU(Activation):
             Numpy array with the sigmoid derivative applied element-wise.
         """
 
-        return np.where(x > 0, 1, 0)
+        return np.where(x > 0, 1, 0)[0]
