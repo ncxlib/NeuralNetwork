@@ -19,20 +19,16 @@ pip install ncxlib
 Here's a quick example of how to use ncxlib to create and train a simple neural network:
 
 ```python
-
-# External imporst
+# External imports
 import numpy as np
 
 # Util imports
-from ncxlib import generators, dataloaders
+from ncxlib import generators, dataloaders, optimizers, losses, activations
 from ncxlib.util import train_test_split
 
 # Neural network imports
-from ncxlib.neuralnetwork import optimizers, losses
-from ncxlib.preprocessing import MinMaxScaler
-from ncxlib.neuralnetwork import NeuralNetwork, FullyConnectedLayer
-from ncxlib.neuralnetwork import activations
-from ncxlib.neuralnetwork.initializers import HeNormal, Zero
+from ncxlib.models.neuralnetwork import NeuralNetwork, FullyConnectedLayer
+from ncxlib.initializers import HeNormal, Zero
 
 
 # ------- Generate some data using generators -------
@@ -74,7 +70,7 @@ model = NeuralNetwork([
 
 # ------- Train model and evaluate accuracy -------
 model.train(X_train, y_train, epochs=20, learning_rate=0.01)
-model.evaluate(X_test, y_test)
+results = model.evaluate(X_test, y_test, metrics=['classification', 'roc'])
 
 ```
 

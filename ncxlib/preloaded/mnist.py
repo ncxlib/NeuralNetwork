@@ -1,7 +1,9 @@
-from ncxlib import util
 import numpy as np
 
+from ncxlib import util
+
 URL = "https://ncxlib.s3.us-east-1.amazonaws.com/data/mnist/ncxlib.mnist.data.gz"
+
 
 def load_data(normalize=False):
     """
@@ -21,7 +23,7 @@ def load_data(normalize=False):
     y_test = np.array(data["y_test"])
 
     if normalize:
-        X_train = X_train / 255.0 
+        X_train = X_train / 255.0
         X_test = X_test / 255.0
 
     return X_train, X_test, y_train, y_test

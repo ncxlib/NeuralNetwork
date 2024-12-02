@@ -1,7 +1,9 @@
-from ncxlib.datasets import Dataset
 import numpy as np
-from ncxlib.preprocessing import Preprocessor
 import pandas as pd
+
+from ncxlib.datasets import Dataset
+from ncxlib.preprocessing import Preprocessor
+
 
 class OneHotEncoder(Preprocessor):
     def __init__(self):

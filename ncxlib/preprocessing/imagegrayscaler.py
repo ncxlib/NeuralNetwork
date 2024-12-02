@@ -1,7 +1,8 @@
-from ncxlib.preprocessing import Preprocessor
 import numpy as np
-from ncxlib.datasets import Dataset
 import pandas as pd
+
+from ncxlib.datasets import Dataset
+from ncxlib.preprocessing import Preprocessor
 
 
 class ImageGrayscaler(Preprocessor):
@@ -24,7 +25,9 @@ class ImageGrayscaler(Preprocessor):
             rgb_pixels = row["data"]
             grayscale_image = self.img_to_grayscale(rgb_pixels)
             img_array = np.array(grayscale_image)
-            imgs.append({"title": row["title"], "data": img_array, "target": row["target"]})
+            imgs.append(
+                {"title": row["title"], "data": img_array, "target": row["target"]}
+            )
 
         dataframe = pd.DataFrame(imgs)
         dataframe["title"] = dataframe["title"].astype("string")

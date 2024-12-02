@@ -1,5 +1,6 @@
 import numpy as np
 
+
 class KFold:
     """
     K-Fold Cross-Validation Class.
@@ -12,6 +13,7 @@ class KFold:
     random_state : int, optional
         Controls the randomness of the shuffle for reproducibility.
     """
+
     def __init__(self, n_splits=5, shuffle=False, random_state=None):
         if n_splits < 2:
             raise ValueError("n_splits must be at least 2.")
@@ -37,19 +39,19 @@ class KFold:
         """
         n_samples = len(X)
         indices = np.arange(n_samples)
-        
+
         if self.shuffle:
             rng = np.random.default_rng(self.random_state)
             rng.shuffle(indices)
-        
+
         fold_sizes = np.full(self.n_splits, n_samples // self.n_splits, dtype=int)
-        fold_sizes[:n_samples % self.n_splits] += 1
+        fold_sizes[: n_samples % self.n_splits] += 1
         current = 0
-        
+
         for fold_size in fold_sizes:
-            val_indices = indices[current:current + fold_size]
-            train_indices = np.concatenate([indices[:current], indices[current + fold_size:]])
+            val_indices = indices[current : current + fold_size]
+            train_indices = np.concatenate(
+                [indices[:current], indices[current + fold_size :]]
+            )
             yield train_indices, val_indices
             current += fold_size
-
-    

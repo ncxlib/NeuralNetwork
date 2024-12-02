@@ -1,8 +1,9 @@
-from PIL import Image
 import numpy as np
-from ncxlib.preprocessing import Preprocessor
-from ncxlib.datasets import Dataset
 import pandas as pd
+from PIL import Image
+
+from ncxlib.datasets import Dataset
+from ncxlib.preprocessing import Preprocessor
 
 
 class ImageRescaler(Preprocessor):

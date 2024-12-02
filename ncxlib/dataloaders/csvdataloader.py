@@ -1,6 +1,7 @@
+from typing import Optional
+
 from ncxlib.dataloaders import DataLoader
 from ncxlib.datasets import CSVDataset
-from typing import Optional
 from ncxlib.preprocessing import Preprocessor
 
 
@@ -22,7 +23,7 @@ class CSVDataLoader(DataLoader):
         - X (np.ndarray): Feature matrix.
         - y (np.ndarray): Target variable array.
         """
-        df = self.dataset.data 
-        X = df.drop(columns=["target"]).values 
+        df = self.dataset.data
+        X = df.drop(columns=["target"]).values
         y = df["target"].values
         return X, y

@@ -1,4 +1,5 @@
-import numpy as np 
+import numpy as np
+
 
 def train_test_split(X, y, test_size=0.2, random_state=None):
     """Splits data into training and testing sets.
@@ -33,3 +34,14 @@ def train_test_split(X, y, test_size=0.2, random_state=None):
 
     return X_train, X_test, y_train, y_test
 
+
+def split_classes(targets: np.ndarray):
+    unique_targets = np.unique(targets)
+    positive_class, negative_class = 1, 0
+
+    # for +ve / -ve classes
+    if np.sum(unique_targets >= 0) != len(unique_targets):
+        positive_class = unique_targets[unique_targets > 0][0]
+        negative_class = unique_targets[unique_targets < 0][0]
+
+    return positive_class, negative_class
