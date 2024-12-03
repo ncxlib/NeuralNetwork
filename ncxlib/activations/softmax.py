@@ -27,7 +27,7 @@ class Softmax(Activation):
         Calculates the derivative of the Softmax function.
 
         Returns:
-          np.ndarray: The Jacobian matrix for the Softmax derivative.
+          np.ndarray: The logits Softmax derivative.
 
         """
         if self.activated is None:
